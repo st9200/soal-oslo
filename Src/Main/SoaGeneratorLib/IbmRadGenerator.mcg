@@ -20,6 +20,7 @@ configuration
         bool ThrowNotImplementedException = true;
         bool GenerateProxyFeatureConstructors = false;
         bool GenerateImplementationBase = false;
+		bool GenerateRestfulWebService = false;
     end properties
 end configuration
 
@@ -30,7 +31,7 @@ function void Main()
 	JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
 	JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
 	JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-	JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+	JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;	
 
 	XsdWsdlGenerator.Properties.GeneratePolicies = false;
 	XsdWsdlGenerator.Properties.Ibm = true;

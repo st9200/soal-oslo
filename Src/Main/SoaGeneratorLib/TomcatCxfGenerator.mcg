@@ -20,6 +20,7 @@ configuration
         bool ThrowNotImplementedException = true;
         bool GenerateProxyFeatureConstructors = false;
         bool GenerateImplementationBase = false;
+		bool GenerateRestfulWebService = false;
 		string CxfVersion = "2.7.11";
 		bool GenerateJksService = true;
 		bool GenerateJksClient = true;
@@ -33,7 +34,7 @@ function void Main()
 	JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
 	JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
 	JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-	JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+	JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;	
 
 	EclipseCxfGenerator.Properties.ProjectName = Properties.ProjectName;
 	EclipseCxfGenerator.Properties.ResourcesDir = Properties.ResourcesDir;

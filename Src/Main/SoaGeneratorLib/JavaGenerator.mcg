@@ -15,7 +15,7 @@ configuration
         bool NoImplementationDelegates = true;
         bool ThrowNotImplementedException = true;
         bool GenerateProxyFeatureConstructors = false;
-        bool GenerateImplementationBase = false;
+        bool GenerateImplementationBase = false;		
         bool GenerateOracleAnnotations = false;
         bool GenerateServerStubs = true;
         bool GenerateClientProxies = true;

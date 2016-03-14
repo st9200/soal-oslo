@@ -22,7 +22,7 @@ namespace SoaMetaModel
             this.XsdWsdlGenerator = new XsdWsdlGenerator(instances, context);
         }
         
-            #region functions from "C:\Users\Balazs\Documents\Visual Studio 2013\Projects\SoaMM\SoaGeneratorLib\NetbeansGenerator.mcg"
+            #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\NetbeansGenerator.mcg"
             public PropertyGroup_Properties Properties { get; private set; }
             
             public class PropertyGroup_Properties
@@ -37,6 +37,7 @@ namespace SoaMetaModel
                     this.ThrowNotImplementedException = true;
                     this.GenerateProxyFeatureConstructors = false;
                     this.GenerateImplementationBase = false;
+                    this.GenerateRestfulWebService = false;
                     this.GenerateMetroJksService = true;
                     this.GenerateMetroJksClient = true;
                 }
@@ -49,6 +50,7 @@ namespace SoaMetaModel
                 public bool ThrowNotImplementedException { get; set; }
                 public bool GenerateProxyFeatureConstructors { get; set; }
                 public bool GenerateImplementationBase { get; set; }
+                public bool GenerateRestfulWebService { get; set; }
                 public bool GenerateMetroJksService { get; set; }
                 public bool GenerateMetroJksClient { get; set; }
             }
@@ -552,7 +554,7 @@ namespace SoaMetaModel
             }
             
             #endregion
-                #region functions from "C:\Users\Balazs\Documents\Visual Studio 2013\Projects\SoaMM\SoaGeneratorLib\GeneratorLib.mcg"
+                #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\GeneratorLib.mcg"
                 public string Generated_FirstLetterLow(string s)
                 {
                     return s.Substring(0, 1).ToLower() + s.Substring(1);

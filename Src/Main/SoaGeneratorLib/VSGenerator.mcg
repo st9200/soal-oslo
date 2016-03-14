@@ -17,6 +17,7 @@ configuration
         bool ThrowNotImplementedException = true;
         bool NoWindowsIdentityFoundation = true;
         bool GenerateImplementationBase = false;
+		bool GenerateRestfulWebService = false;
     end properties
 end configuration
 

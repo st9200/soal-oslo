@@ -18,7 +18,7 @@ namespace SoaMetaModel
             this.Properties = new PropertyGroup_Properties();
         }
         
-            #region functions from "C:\Users\Balazs\Documents\Visual Studio 2013\Projects\SoaMM\SoaGeneratorLib\VSGenerator.mcg"
+            #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\VSGenerator.mcg"
             public PropertyGroup_Properties Properties { get; private set; }
             
             public class PropertyGroup_Properties
@@ -32,6 +32,7 @@ namespace SoaMetaModel
                     this.ThrowNotImplementedException = true;
                     this.NoWindowsIdentityFoundation = true;
                     this.GenerateImplementationBase = false;
+                    this.GenerateRestfulWebService = false;
                 }
                 
                 public string ProjectName { get; set; }
@@ -41,6 +42,7 @@ namespace SoaMetaModel
                 public bool ThrowNotImplementedException { get; set; }
                 public bool NoWindowsIdentityFoundation { get; set; }
                 public bool GenerateImplementationBase { get; set; }
+                public bool GenerateRestfulWebService { get; set; }
             }
             
             public override void Generated_Main()
@@ -2888,7 +2890,7 @@ namespace SoaMetaModel
             }
             
             #endregion
-                #region functions from "C:\Users\Balazs\Documents\Visual Studio 2013\Projects\SoaMM\SoaGeneratorLib\GeneratorLib.mcg"
+                #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\GeneratorLib.mcg"
                 public string Generated_FirstLetterLow(string s)
                 {
                     return s.Substring(0, 1).ToLower() + s.Substring(1);

@@ -6,6 +6,7 @@ using System.IO;
 using Ionic.Zip;
 include "GeneratorLib.mcg";
 import JavaGenerator;
+import JavaRestGenerator;
 import XsdWsdlGenerator;
 
 configuration
@@ -20,6 +21,7 @@ configuration
         bool ThrowNotImplementedException = true;
         bool GenerateProxyFeatureConstructors = false;
         bool GenerateImplementationBase = false;
+		bool GenerateRestfulWebService = false;
     end properties
 end configuration
 
@@ -27,11 +29,17 @@ end configuration
 * Main function for creating folders and calling file templates.
 */
 function void Main()
-	JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
-	JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
-	JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-	JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
-
+	if (Properties.GenerateRestfulWebService)
+		JavaRestGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
+		JavaRestGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+		JavaRestGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
+		JavaRestGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;		
+	else	
+		JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
+		JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+		JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
+		JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;		
+	end if
 	Context.SetOutputFolder(Properties.OutputDir);
 	Context.CreateFolder("Oracle");
 	Context.SetOutput("Oracle/" + GetProjectName() + "_weblogic_script.py");
@@ -44,44 +52,54 @@ function void Main()
 	Context.Output(GenerateProjectFile());
 
 	Context.CreateFolder("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src");
-	JavaGenerator.Properties.WsdlSuffix = "";
-	JavaGenerator.Properties.GenerateOracleAnnotations = true;
-	JavaGenerator.Properties.GenerateServerStubs = true;
-	JavaGenerator.Properties.GenerateClientProxies = false;
-	JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
-	JavaGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src");
-	loop(Instances->endp:typeof(Endpoint))
-		Context.SetOutput("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src/"+JavaGenerator.NamespaceToPath(endp.Namespace)+"/"+endp.Name+".jaxrpc");
-		Context.Output(GenerateJaxRpc(endp));
-	end loop
+	if (Properties.GenerateRestfulWebService)
+		JavaRestGenerator.Properties.GenerateOracleAnnotations = true;
+		JavaRestGenerator.Properties.GenerateServerStubs = true;
+		JavaRestGenerator.Properties.GenerateClientProxies = false;		
+		JavaRestGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src");		
+	else
+		JavaGenerator.Properties.WsdlSuffix = "";
+		JavaGenerator.Properties.GenerateOracleAnnotations = true;
+		JavaGenerator.Properties.GenerateServerStubs = true;
+		JavaGenerator.Properties.GenerateClientProxies = false;
+		JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
+		JavaGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src");
+		loop(Instances->endp:typeof(Endpoint))
+			Context.SetOutput("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src/"+JavaGenerator.NamespaceToPath(endp.Namespace)+"/"+endp.Name+".jaxrpc");
+			Context.Output(GenerateJaxRpc(endp));
+		end loop
+	end if
 
 	Context.CreateFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF");
 	Context.SetOutputFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF");
 	Context.SetOutput("web.xml");
 	Context.Output(GenerateWebXml());
 
-	Context.CreateFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF/wsdl");
-	Context.SetOutputFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF/wsdl");
-	XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir+"/Oracle/" + GetProjectName() + "/public_html/WEB-INF/wsdl";
-	XsdWsdlGenerator.Properties.GenerateSingleWsdl = true;
-	XsdWsdlGenerator.Properties.GenerateSeparateXsdWsdlFolder = false;
-	XsdWsdlGenerator.Properties.GeneratePolicies = false;
-	loop(Instances->ns:typeof(Namespace))
-		Context.SetOutput(ns.FullName+".xsd");
-		Context.Output(XsdWsdlGenerator.GenerateXsd(ns));
-		loop(ns->Declarations->endp:typeof(Endpoint))
-			Context.SetOutput(endp.Name+".wsdl");
-			Context.Output(XsdWsdlGenerator.GenerateSingleWsdl(endp));
+	if (!Properties.GenerateRestfulWebService)
+		Context.CreateFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF/wsdl");
+		Context.SetOutputFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF/wsdl");
+		XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir+"/Oracle/" + GetProjectName() + "/public_html/WEB-INF/wsdl";
+		XsdWsdlGenerator.Properties.GenerateSingleWsdl = true;
+		XsdWsdlGenerator.Properties.GenerateSeparateXsdWsdlFolder = false;
+		XsdWsdlGenerator.Properties.GeneratePolicies = false;
+		loop(Instances->ns:typeof(Namespace))
+			Context.SetOutput(ns.FullName+".xsd");
+			Context.Output(XsdWsdlGenerator.GenerateXsd(ns));
+			loop(ns->Declarations->endp:typeof(Endpoint))
+				Context.SetOutput(endp.Name+".wsdl");
+				Context.Output(XsdWsdlGenerator.GenerateSingleWsdl(endp));
+			end loop
 		end loop
-	end loop
-	Context.CreateFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF/policies");
-	Context.SetOutputFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF/policies");
-	loop(Instances->ns:typeof(Namespace)->Declarations->binding:typeof(Binding))
-		if (binding.HasPolicy())
-			Context.SetOutput(binding.Name+"_Policy.xml");
-			Context.Output(XsdWsdlGenerator.GeneratePolicy(ns, binding, true, true));
-		end if
-	end loop
+		
+		Context.CreateFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF/policies");
+		Context.SetOutputFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF/policies");
+		loop(Instances->ns:typeof(Namespace)->Declarations->binding:typeof(Binding))
+			if (binding.HasPolicy())
+				Context.SetOutput(binding.Name+"_Policy.xml");
+				Context.Output(XsdWsdlGenerator.GeneratePolicy(ns, binding, true, true));
+			end if
+		end loop
+	end if
 	
 	Context.SetOutputFolder(Properties.OutputDir);
 	Context.CreateFolder("Oracle/" + GetProjectName() + "App/" + GetClientProjectName());
@@ -89,40 +107,49 @@ function void Main()
 	Context.Output(GenerateClientProjectFile());
 
 	Context.CreateFolder("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src");
-	JavaGenerator.Properties.WsdlSuffix = "";
-	JavaGenerator.Properties.WsdlDirectory = "META-INF/wsdl/";
-	JavaGenerator.Properties.GenerateOracleAnnotations = true;
-	JavaGenerator.Properties.GenerateServerStubs = false;
-	JavaGenerator.Properties.GenerateClientProxies = true;
-	JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
-	JavaGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src");
-	loop(Instances->endp:typeof(Endpoint))
-		Context.SetOutput("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/"+JavaGenerator.NamespaceToPath(endp.Namespace)+"/"+endp.Name+".proxy");
-		Context.Output(GenerateJaxRpcProxy(endp));
-	end loop
-
-	Context.CreateFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/META-INF/wsdl");
-	Context.SetOutputFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/META-INF/wsdl");
-	XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir+"/Oracle/" + GetClientProjectName() + "/src/META-INF/wsdl";
-	XsdWsdlGenerator.Properties.GenerateSingleWsdl = true;
-	XsdWsdlGenerator.Properties.GenerateSeparateXsdWsdlFolder = false;
-	XsdWsdlGenerator.Properties.GeneratePolicies = false;
-	loop(Instances->ns:typeof(Namespace))
-		Context.SetOutput(ns.FullName+".xsd");
-		Context.Output(XsdWsdlGenerator.GenerateXsd(ns));
-		loop(ns->Declarations->endp:typeof(Endpoint))
-			Context.SetOutput(endp.Name+".wsdl");
-			Context.Output(XsdWsdlGenerator.GenerateSingleWsdl(endp));
+	if (Properties.GenerateRestfulWebService)				
+		JavaRestGenerator.Properties.GenerateOracleAnnotations = true;
+		JavaRestGenerator.Properties.GenerateServerStubs = false;
+		JavaRestGenerator.Properties.GenerateClientProxies = true;		
+		JavaRestGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src");		
+	else
+		JavaGenerator.Properties.WsdlSuffix = "";
+		JavaGenerator.Properties.WsdlDirectory = "META-INF/wsdl/";
+		JavaGenerator.Properties.GenerateOracleAnnotations = true;
+		JavaGenerator.Properties.GenerateServerStubs = false;
+		JavaGenerator.Properties.GenerateClientProxies = true;
+		JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
+		JavaGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src");
+		loop(Instances->endp:typeof(Endpoint))
+			Context.SetOutput("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/"+JavaGenerator.NamespaceToPath(endp.Namespace)+"/"+endp.Name+".proxy");
+			Context.Output(GenerateJaxRpcProxy(endp));
 		end loop
-	end loop
-	Context.CreateFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/META-INF/policies");
-	Context.SetOutputFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/META-INF/policies");
-	loop(Instances->ns:typeof(Namespace)->Declarations->binding:typeof(Binding))
-		if (binding.HasPolicy())
-			Context.SetOutput(binding.Name+"_Policy.xml");
-			Context.Output(XsdWsdlGenerator.GeneratePolicy(ns, binding, true, true));
-		end if
-	end loop
+	end if
+
+	if (!Properties.GenerateRestfulWebService)
+		Context.CreateFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/META-INF/wsdl");
+		Context.SetOutputFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/META-INF/wsdl");
+		XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir+"/Oracle/" + GetClientProjectName() + "/src/META-INF/wsdl";
+		XsdWsdlGenerator.Properties.GenerateSingleWsdl = true;
+		XsdWsdlGenerator.Properties.GenerateSeparateXsdWsdlFolder = false;
+		XsdWsdlGenerator.Properties.GeneratePolicies = false;
+		loop(Instances->ns:typeof(Namespace))
+			Context.SetOutput(ns.FullName+".xsd");
+			Context.Output(XsdWsdlGenerator.GenerateXsd(ns));
+			loop(ns->Declarations->endp:typeof(Endpoint))
+				Context.SetOutput(endp.Name+".wsdl");
+				Context.Output(XsdWsdlGenerator.GenerateSingleWsdl(endp));
+			end loop
+		end loop
+		Context.CreateFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/META-INF/policies");
+		Context.SetOutputFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/META-INF/policies");
+		loop(Instances->ns:typeof(Namespace)->Declarations->binding:typeof(Binding))
+			if (binding.HasPolicy())
+				Context.SetOutput(binding.Name+"_Policy.xml");
+				Context.Output(XsdWsdlGenerator.GeneratePolicy(ns, binding, true, true));
+			end if
+		end loop
+	end if
 	
 	Context.SetOutputFolder(Properties.OutputDir);
 end function

@@ -27,6 +27,8 @@ namespace SoaMM
             public bool GenerateNoUnimplementedException { get; set; }
             public bool GenerateImplementationBase { get; set; }
 
+            public bool GenerateRestfulWebService { get; private set; }
+
             public string NetbeansProject { get; private set; }
             public string JBossProject { get; private set; }
             public string TomcatProject { get; private set; }
@@ -50,6 +52,8 @@ namespace SoaMM
                 GenerateNoImplementationDelegates = false;
                 GenerateNoUnimplementedException = false;
                 GenerateImplementationBase = false;
+
+                GenerateRestfulWebService = false;
 
                 NetbeansProject = null;
                 JBossProject = null;
@@ -115,6 +119,11 @@ namespace SoaMM
                             case "--no-unimplemented-exception":
                                 GenerateNoUnimplementedException = true;
                                 break;
+                            case "--rest":
+                                GenerateRestfulWebService = true;
+                                GenerateXsdWsdl = false;
+                                Console.WriteLine("[WARNING] --rest option disables xsd/wsdl generation according to RESTful standards!");
+                                break;
                             default:
                                 throw new Exception("Invalid option: " + args[i]);
                         }
@@ -178,6 +187,7 @@ namespace SoaMM
                 netbeansGenerator.Properties.NoImplementationDelegates = options.GenerateNoImplementationDelegates;
                 netbeansGenerator.Properties.ThrowNotImplementedException = !options.GenerateNoUnimplementedException;
                 netbeansGenerator.Properties.GenerateImplementationBase = options.GenerateImplementationBase;
+                netbeansGenerator.Properties.GenerateRestfulWebService = options.GenerateRestfulWebService;
                 netbeansGenerator.Execute();
             }
             if (options.GenerateJBoss)
@@ -188,6 +198,7 @@ namespace SoaMM
                 jbossGenerator.Properties.NoImplementationDelegates = options.GenerateNoImplementationDelegates;
                 jbossGenerator.Properties.ThrowNotImplementedException = !options.GenerateNoUnimplementedException;
                 jbossGenerator.Properties.GenerateImplementationBase = options.GenerateImplementationBase;
+                jbossGenerator.Properties.GenerateRestfulWebService = options.GenerateRestfulWebService;
                 jbossGenerator.Execute();
             }
             if (options.GenerateTomcat)
@@ -198,6 +209,7 @@ namespace SoaMM
                 tomcatGenerator.Properties.NoImplementationDelegates = options.GenerateNoImplementationDelegates;
                 tomcatGenerator.Properties.ThrowNotImplementedException = !options.GenerateNoUnimplementedException;
                 tomcatGenerator.Properties.GenerateImplementationBase = options.GenerateImplementationBase;
+                tomcatGenerator.Properties.GenerateRestfulWebService = options.GenerateRestfulWebService;
                 tomcatGenerator.Execute();
             }
             if (options.GenerateIbm)
@@ -208,6 +220,7 @@ namespace SoaMM
                 ibmGenerator.Properties.NoImplementationDelegates = options.GenerateNoImplementationDelegates;
                 ibmGenerator.Properties.ThrowNotImplementedException = !options.GenerateNoUnimplementedException;
                 ibmGenerator.Properties.GenerateImplementationBase = options.GenerateImplementationBase;
+                ibmGenerator.Properties.GenerateRestfulWebService = options.GenerateRestfulWebService;
                 ibmGenerator.Execute();
             }
             if (options.GenerateOracle)
@@ -218,6 +231,7 @@ namespace SoaMM
                 oracleGenerator.Properties.NoImplementationDelegates = options.GenerateNoImplementationDelegates;
                 oracleGenerator.Properties.ThrowNotImplementedException = !options.GenerateNoUnimplementedException;
                 oracleGenerator.Properties.GenerateImplementationBase = options.GenerateImplementationBase;
+                oracleGenerator.Properties.GenerateRestfulWebService = options.GenerateRestfulWebService;
                 oracleGenerator.Execute();
             }
             if (options.GenerateVS)
@@ -228,6 +242,7 @@ namespace SoaMM
                 vsGenerator.Properties.NoImplementationDelegates = options.GenerateNoImplementationDelegates;
                 vsGenerator.Properties.ThrowNotImplementedException = !options.GenerateNoUnimplementedException;
                 vsGenerator.Properties.GenerateImplementationBase = options.GenerateImplementationBase;
+                vsGenerator.Properties.GenerateRestfulWebService = options.GenerateRestfulWebService;
                 vsGenerator.Execute();
             }
         }
@@ -308,7 +323,7 @@ namespace SoaMM
                 if (options.InputFiles == null || options.InputFiles.Length == 0)
                 {
                     Console.WriteLine("Usage:");
-                    Console.WriteLine("SoaMM.exe input.soal [--output OutputDir] [--visualstudio-project VSProjectName] [--netbeans-project NBProjectName] [--jboss-project JBossProjectName] [--tomcat-project TomcatProjectName] [--rad-project IbmRadProjectName] [--oracle-project OracleProjectName]");
+                    Console.WriteLine("SoaMM.exe input.soal [--output OutputDir] [--visualstudio-project VSProjectName] [--netbeans-project NBProjectName] [--jboss-project JBossProjectName] [--tomcat-project TomcatProjectName] [--rad-project IbmRadProjectName] [--oracle-project OracleProjectName] [--rest]");
                     return;
                 }
                 ErrorReporter er = new TextWriterReporter();

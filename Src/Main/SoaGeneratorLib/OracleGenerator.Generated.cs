@@ -13,6 +13,7 @@ namespace SoaMetaModel
     public partial class OracleGenerator : Generator<IEnumerable<SoaObject>, GeneratorContext>
     {
         public JavaGenerator JavaGenerator { get; private set; }
+        public JavaRestGenerator JavaRestGenerator { get; private set; }
         public XsdWsdlGenerator XsdWsdlGenerator { get; private set; }
         
         public OracleGenerator(IEnumerable<SoaObject> instances, GeneratorContext context)
@@ -20,10 +21,11 @@ namespace SoaMetaModel
         {
             this.Properties = new PropertyGroup_Properties();
             this.JavaGenerator = new JavaGenerator(instances, context);
+            this.JavaRestGenerator = new JavaRestGenerator(instances, context);
             this.XsdWsdlGenerator = new XsdWsdlGenerator(instances, context);
         }
         
-            #region functions from "C:\Users\Balazs\Documents\Visual Studio 2013\Projects\SoaMM\SoaGeneratorLib\OracleGenerator.mcg"
+            #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\OracleGenerator.mcg"
             public PropertyGroup_Properties Properties { get; private set; }
             
             public class PropertyGroup_Properties
@@ -37,6 +39,7 @@ namespace SoaMetaModel
                     this.ThrowNotImplementedException = true;
                     this.GenerateProxyFeatureConstructors = false;
                     this.GenerateImplementationBase = false;
+                    this.GenerateRestfulWebService = false;
                 }
                 
                 public string ProjectName { get; set; }
@@ -46,14 +49,25 @@ namespace SoaMetaModel
                 public bool ThrowNotImplementedException { get; set; }
                 public bool GenerateProxyFeatureConstructors { get; set; }
                 public bool GenerateImplementationBase { get; set; }
+                public bool GenerateRestfulWebService { get; set; }
             }
             
             public override void Generated_Main()
             {
-                JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
-                JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
-                JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-                JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+                if (Properties.GenerateRestfulWebService)
+                {
+                    JavaRestGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
+                    JavaRestGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+                    JavaRestGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
+                    JavaRestGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+                }
+                else
+                {
+                    JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
+                    JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+                    JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
+                    JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+                }
                 Context.SetOutputFolder(Properties.OutputDir);
                 Context.CreateFolder("Oracle");
                 Context.SetOutput("Oracle/" + Generated_GetProjectName() + "_weblogic_script.py");
@@ -65,106 +79,119 @@ namespace SoaMetaModel
                 Context.SetOutput("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/" + Generated_GetProjectName() + ".jpr");
                 Context.Output(Generated_GenerateProjectFile());
                 Context.CreateFolder("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/src");
-                JavaGenerator.Properties.WsdlSuffix = "";
-                JavaGenerator.Properties.GenerateOracleAnnotations = true;
-                JavaGenerator.Properties.GenerateServerStubs = true;
-                JavaGenerator.Properties.GenerateClientProxies = false;
-                JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
-                JavaGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/src");
-                int __loop1_iteration = 0;
-                var __loop1_result =
-                    (from __loop1_tmp_item___noname1 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                    from __loop1_tmp_item_endp in EnumerableExtensions.Enumerate((__loop1_tmp_item___noname1).GetEnumerator()).OfType<Endpoint>()
-                    select
-                        new
-                        {
-                            __loop1_item___noname1 = __loop1_tmp_item___noname1,
-                            __loop1_item_endp = __loop1_tmp_item_endp,
-                        }).ToArray();
-                foreach (var __loop1_item in __loop1_result)
+                if (Properties.GenerateRestfulWebService)
                 {
-                    var __noname1 = __loop1_item.__loop1_item___noname1;
-                    var endp = __loop1_item.__loop1_item_endp;
-                    ++__loop1_iteration;
-                    Context.SetOutput("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/src/" + JavaGenerator.Generated_NamespaceToPath(endp.Namespace) + "/" + endp.Name + ".jaxrpc");
-                    Context.Output(Generated_GenerateJaxRpc(endp));
+                    JavaRestGenerator.Properties.GenerateOracleAnnotations = true;
+                    JavaRestGenerator.Properties.GenerateServerStubs = true;
+                    JavaRestGenerator.Properties.GenerateClientProxies = false;
+                    JavaRestGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/src");
+                }
+                else
+                {
+                    JavaGenerator.Properties.WsdlSuffix = "";
+                    JavaGenerator.Properties.GenerateOracleAnnotations = true;
+                    JavaGenerator.Properties.GenerateServerStubs = true;
+                    JavaGenerator.Properties.GenerateClientProxies = false;
+                    JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
+                    JavaGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/src");
+                    int __loop1_iteration = 0;
+                    var __loop1_result =
+                        (from __loop1_tmp_item___noname1 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop1_tmp_item_endp in EnumerableExtensions.Enumerate((__loop1_tmp_item___noname1).GetEnumerator()).OfType<Endpoint>()
+                        select
+                            new
+                            {
+                                __loop1_item___noname1 = __loop1_tmp_item___noname1,
+                                __loop1_item_endp = __loop1_tmp_item_endp,
+                            }).ToArray();
+                    foreach (var __loop1_item in __loop1_result)
+                    {
+                        var __noname1 = __loop1_item.__loop1_item___noname1;
+                        var endp = __loop1_item.__loop1_item_endp;
+                        ++__loop1_iteration;
+                        Context.SetOutput("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/src/" + JavaGenerator.Generated_NamespaceToPath(endp.Namespace) + "/" + endp.Name + ".jaxrpc");
+                        Context.Output(Generated_GenerateJaxRpc(endp));
+                    }
                 }
                 Context.CreateFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/public_html/WEB-INF");
                 Context.SetOutputFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/public_html/WEB-INF");
                 Context.SetOutput("web.xml");
                 Context.Output(Generated_GenerateWebXml());
-                Context.CreateFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/public_html/WEB-INF/wsdl");
-                Context.SetOutputFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/public_html/WEB-INF/wsdl");
-                XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "/public_html/WEB-INF/wsdl";
-                XsdWsdlGenerator.Properties.GenerateSingleWsdl = true;
-                XsdWsdlGenerator.Properties.GenerateSeparateXsdWsdlFolder = false;
-                XsdWsdlGenerator.Properties.GeneratePolicies = false;
-                int __loop2_iteration = 0;
-                var __loop2_result =
-                    (from __loop2_tmp_item___noname2 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                    from __loop2_tmp_item_ns in EnumerableExtensions.Enumerate((__loop2_tmp_item___noname2).GetEnumerator()).OfType<Namespace>()
-                    select
-                        new
-                        {
-                            __loop2_item___noname2 = __loop2_tmp_item___noname2,
-                            __loop2_item_ns = __loop2_tmp_item_ns,
-                        }).ToArray();
-                foreach (var __loop2_item in __loop2_result)
+                if (!Properties.GenerateRestfulWebService)
                 {
-                    var __noname2 = __loop2_item.__loop2_item___noname2;
-                    var ns = __loop2_item.__loop2_item_ns;
-                    ++__loop2_iteration;
-                    Context.SetOutput(ns.FullName + ".xsd");
-                    Context.Output(XsdWsdlGenerator.Generated_GenerateXsd(ns));
-                    int __loop3_iteration = 0;
-                    var __loop3_result =
-                        (from __loop3_tmp_item___noname3 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
-                        from __loop3_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop3_tmp_item___noname3.Declarations).GetEnumerator())
-                        from __loop3_tmp_item_endp in EnumerableExtensions.Enumerate((__loop3_tmp_item_Declarations).GetEnumerator()).OfType<Endpoint>()
+                    Context.CreateFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/public_html/WEB-INF/wsdl");
+                    Context.SetOutputFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/public_html/WEB-INF/wsdl");
+                    XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "/public_html/WEB-INF/wsdl";
+                    XsdWsdlGenerator.Properties.GenerateSingleWsdl = true;
+                    XsdWsdlGenerator.Properties.GenerateSeparateXsdWsdlFolder = false;
+                    XsdWsdlGenerator.Properties.GeneratePolicies = false;
+                    int __loop2_iteration = 0;
+                    var __loop2_result =
+                        (from __loop2_tmp_item___noname2 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop2_tmp_item_ns in EnumerableExtensions.Enumerate((__loop2_tmp_item___noname2).GetEnumerator()).OfType<Namespace>()
                         select
                             new
                             {
-                                __loop3_item___noname3 = __loop3_tmp_item___noname3,
-                                __loop3_item_Declarations = __loop3_tmp_item_Declarations,
-                                __loop3_item_endp = __loop3_tmp_item_endp,
+                                __loop2_item___noname2 = __loop2_tmp_item___noname2,
+                                __loop2_item_ns = __loop2_tmp_item_ns,
                             }).ToArray();
-                    foreach (var __loop3_item in __loop3_result)
+                    foreach (var __loop2_item in __loop2_result)
                     {
-                        var __noname3 = __loop3_item.__loop3_item___noname3;
-                        var Declarations = __loop3_item.__loop3_item_Declarations;
-                        var endp = __loop3_item.__loop3_item_endp;
-                        ++__loop3_iteration;
-                        Context.SetOutput(endp.Name + ".wsdl");
-                        Context.Output(XsdWsdlGenerator.Generated_GenerateSingleWsdl(endp));
-                    }
-                }
-                Context.CreateFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/public_html/WEB-INF/policies");
-                Context.SetOutputFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/public_html/WEB-INF/policies");
-                int __loop4_iteration = 0;
-                var __loop4_result =
-                    (from __loop4_tmp_item___noname4 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                    from __loop4_tmp_item_ns in EnumerableExtensions.Enumerate((__loop4_tmp_item___noname4).GetEnumerator()).OfType<Namespace>()
-                    from __loop4_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop4_tmp_item_ns.Declarations).GetEnumerator())
-                    from __loop4_tmp_item_binding in EnumerableExtensions.Enumerate((__loop4_tmp_item_Declarations).GetEnumerator()).OfType<Binding>()
-                    select
-                        new
+                        var __noname2 = __loop2_item.__loop2_item___noname2;
+                        var ns = __loop2_item.__loop2_item_ns;
+                        ++__loop2_iteration;
+                        Context.SetOutput(ns.FullName + ".xsd");
+                        Context.Output(XsdWsdlGenerator.Generated_GenerateXsd(ns));
+                        int __loop3_iteration = 0;
+                        var __loop3_result =
+                            (from __loop3_tmp_item___noname3 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
+                            from __loop3_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop3_tmp_item___noname3.Declarations).GetEnumerator())
+                            from __loop3_tmp_item_endp in EnumerableExtensions.Enumerate((__loop3_tmp_item_Declarations).GetEnumerator()).OfType<Endpoint>()
+                            select
+                                new
+                                {
+                                    __loop3_item___noname3 = __loop3_tmp_item___noname3,
+                                    __loop3_item_Declarations = __loop3_tmp_item_Declarations,
+                                    __loop3_item_endp = __loop3_tmp_item_endp,
+                                }).ToArray();
+                        foreach (var __loop3_item in __loop3_result)
                         {
-                            __loop4_item___noname4 = __loop4_tmp_item___noname4,
-                            __loop4_item_ns = __loop4_tmp_item_ns,
-                            __loop4_item_Declarations = __loop4_tmp_item_Declarations,
-                            __loop4_item_binding = __loop4_tmp_item_binding,
-                        }).ToArray();
-                foreach (var __loop4_item in __loop4_result)
-                {
-                    var __noname4 = __loop4_item.__loop4_item___noname4;
-                    var ns = __loop4_item.__loop4_item_ns;
-                    var Declarations = __loop4_item.__loop4_item_Declarations;
-                    var binding = __loop4_item.__loop4_item_binding;
-                    ++__loop4_iteration;
-                    if (binding.HasPolicy())
+                            var __noname3 = __loop3_item.__loop3_item___noname3;
+                            var Declarations = __loop3_item.__loop3_item_Declarations;
+                            var endp = __loop3_item.__loop3_item_endp;
+                            ++__loop3_iteration;
+                            Context.SetOutput(endp.Name + ".wsdl");
+                            Context.Output(XsdWsdlGenerator.Generated_GenerateSingleWsdl(endp));
+                        }
+                    }
+                    Context.CreateFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/public_html/WEB-INF/policies");
+                    Context.SetOutputFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/public_html/WEB-INF/policies");
+                    int __loop4_iteration = 0;
+                    var __loop4_result =
+                        (from __loop4_tmp_item___noname4 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop4_tmp_item_ns in EnumerableExtensions.Enumerate((__loop4_tmp_item___noname4).GetEnumerator()).OfType<Namespace>()
+                        from __loop4_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop4_tmp_item_ns.Declarations).GetEnumerator())
+                        from __loop4_tmp_item_binding in EnumerableExtensions.Enumerate((__loop4_tmp_item_Declarations).GetEnumerator()).OfType<Binding>()
+                        select
+                            new
+                            {
+                                __loop4_item___noname4 = __loop4_tmp_item___noname4,
+                                __loop4_item_ns = __loop4_tmp_item_ns,
+                                __loop4_item_Declarations = __loop4_tmp_item_Declarations,
+                                __loop4_item_binding = __loop4_tmp_item_binding,
+                            }).ToArray();
+                    foreach (var __loop4_item in __loop4_result)
                     {
-                        Context.SetOutput(binding.Name + "_Policy.xml");
-                        Context.Output(XsdWsdlGenerator.Generated_GeneratePolicy(ns, binding, true, true));
+                        var __noname4 = __loop4_item.__loop4_item___noname4;
+                        var ns = __loop4_item.__loop4_item_ns;
+                        var Declarations = __loop4_item.__loop4_item_Declarations;
+                        var binding = __loop4_item.__loop4_item_binding;
+                        ++__loop4_iteration;
+                        if (binding.HasPolicy())
+                        {
+                            Context.SetOutput(binding.Name + "_Policy.xml");
+                            Context.Output(XsdWsdlGenerator.Generated_GeneratePolicy(ns, binding, true, true));
+                        }
                     }
                 }
                 Context.SetOutputFolder(Properties.OutputDir);
@@ -172,103 +199,116 @@ namespace SoaMetaModel
                 Context.SetOutput("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/" + Generated_GetClientProjectName() + ".jpr");
                 Context.Output(Generated_GenerateClientProjectFile());
                 Context.CreateFolder("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src");
-                JavaGenerator.Properties.WsdlSuffix = "";
-                JavaGenerator.Properties.WsdlDirectory = "META-INF/wsdl/";
-                JavaGenerator.Properties.GenerateOracleAnnotations = true;
-                JavaGenerator.Properties.GenerateServerStubs = false;
-                JavaGenerator.Properties.GenerateClientProxies = true;
-                JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
-                JavaGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src");
-                int __loop5_iteration = 0;
-                var __loop5_result =
-                    (from __loop5_tmp_item___noname5 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                    from __loop5_tmp_item_endp in EnumerableExtensions.Enumerate((__loop5_tmp_item___noname5).GetEnumerator()).OfType<Endpoint>()
-                    select
-                        new
-                        {
-                            __loop5_item___noname5 = __loop5_tmp_item___noname5,
-                            __loop5_item_endp = __loop5_tmp_item_endp,
-                        }).ToArray();
-                foreach (var __loop5_item in __loop5_result)
+                if (Properties.GenerateRestfulWebService)
                 {
-                    var __noname5 = __loop5_item.__loop5_item___noname5;
-                    var endp = __loop5_item.__loop5_item_endp;
-                    ++__loop5_iteration;
-                    Context.SetOutput("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src/" + JavaGenerator.Generated_NamespaceToPath(endp.Namespace) + "/" + endp.Name + ".proxy");
-                    Context.Output(Generated_GenerateJaxRpcProxy(endp));
+                    JavaRestGenerator.Properties.GenerateOracleAnnotations = true;
+                    JavaRestGenerator.Properties.GenerateServerStubs = false;
+                    JavaRestGenerator.Properties.GenerateClientProxies = true;
+                    JavaRestGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src");
                 }
-                Context.CreateFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src/META-INF/wsdl");
-                Context.SetOutputFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src/META-INF/wsdl");
-                XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/Oracle/" + Generated_GetClientProjectName() + "/src/META-INF/wsdl";
-                XsdWsdlGenerator.Properties.GenerateSingleWsdl = true;
-                XsdWsdlGenerator.Properties.GenerateSeparateXsdWsdlFolder = false;
-                XsdWsdlGenerator.Properties.GeneratePolicies = false;
-                int __loop6_iteration = 0;
-                var __loop6_result =
-                    (from __loop6_tmp_item___noname6 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                    from __loop6_tmp_item_ns in EnumerableExtensions.Enumerate((__loop6_tmp_item___noname6).GetEnumerator()).OfType<Namespace>()
-                    select
-                        new
-                        {
-                            __loop6_item___noname6 = __loop6_tmp_item___noname6,
-                            __loop6_item_ns = __loop6_tmp_item_ns,
-                        }).ToArray();
-                foreach (var __loop6_item in __loop6_result)
+                else
                 {
-                    var __noname6 = __loop6_item.__loop6_item___noname6;
-                    var ns = __loop6_item.__loop6_item_ns;
-                    ++__loop6_iteration;
-                    Context.SetOutput(ns.FullName + ".xsd");
-                    Context.Output(XsdWsdlGenerator.Generated_GenerateXsd(ns));
-                    int __loop7_iteration = 0;
-                    var __loop7_result =
-                        (from __loop7_tmp_item___noname7 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
-                        from __loop7_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop7_tmp_item___noname7.Declarations).GetEnumerator())
-                        from __loop7_tmp_item_endp in EnumerableExtensions.Enumerate((__loop7_tmp_item_Declarations).GetEnumerator()).OfType<Endpoint>()
+                    JavaGenerator.Properties.WsdlSuffix = "";
+                    JavaGenerator.Properties.WsdlDirectory = "META-INF/wsdl/";
+                    JavaGenerator.Properties.GenerateOracleAnnotations = true;
+                    JavaGenerator.Properties.GenerateServerStubs = false;
+                    JavaGenerator.Properties.GenerateClientProxies = true;
+                    JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
+                    JavaGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src");
+                    int __loop5_iteration = 0;
+                    var __loop5_result =
+                        (from __loop5_tmp_item___noname5 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop5_tmp_item_endp in EnumerableExtensions.Enumerate((__loop5_tmp_item___noname5).GetEnumerator()).OfType<Endpoint>()
                         select
                             new
                             {
-                                __loop7_item___noname7 = __loop7_tmp_item___noname7,
-                                __loop7_item_Declarations = __loop7_tmp_item_Declarations,
-                                __loop7_item_endp = __loop7_tmp_item_endp,
+                                __loop5_item___noname5 = __loop5_tmp_item___noname5,
+                                __loop5_item_endp = __loop5_tmp_item_endp,
                             }).ToArray();
-                    foreach (var __loop7_item in __loop7_result)
+                    foreach (var __loop5_item in __loop5_result)
                     {
-                        var __noname7 = __loop7_item.__loop7_item___noname7;
-                        var Declarations = __loop7_item.__loop7_item_Declarations;
-                        var endp = __loop7_item.__loop7_item_endp;
-                        ++__loop7_iteration;
-                        Context.SetOutput(endp.Name + ".wsdl");
-                        Context.Output(XsdWsdlGenerator.Generated_GenerateSingleWsdl(endp));
+                        var __noname5 = __loop5_item.__loop5_item___noname5;
+                        var endp = __loop5_item.__loop5_item_endp;
+                        ++__loop5_iteration;
+                        Context.SetOutput("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src/" + JavaGenerator.Generated_NamespaceToPath(endp.Namespace) + "/" + endp.Name + ".proxy");
+                        Context.Output(Generated_GenerateJaxRpcProxy(endp));
                     }
                 }
-                Context.CreateFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src/META-INF/policies");
-                Context.SetOutputFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src/META-INF/policies");
-                int __loop8_iteration = 0;
-                var __loop8_result =
-                    (from __loop8_tmp_item___noname8 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                    from __loop8_tmp_item_ns in EnumerableExtensions.Enumerate((__loop8_tmp_item___noname8).GetEnumerator()).OfType<Namespace>()
-                    from __loop8_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop8_tmp_item_ns.Declarations).GetEnumerator())
-                    from __loop8_tmp_item_binding in EnumerableExtensions.Enumerate((__loop8_tmp_item_Declarations).GetEnumerator()).OfType<Binding>()
-                    select
-                        new
-                        {
-                            __loop8_item___noname8 = __loop8_tmp_item___noname8,
-                            __loop8_item_ns = __loop8_tmp_item_ns,
-                            __loop8_item_Declarations = __loop8_tmp_item_Declarations,
-                            __loop8_item_binding = __loop8_tmp_item_binding,
-                        }).ToArray();
-                foreach (var __loop8_item in __loop8_result)
+                if (!Properties.GenerateRestfulWebService)
                 {
-                    var __noname8 = __loop8_item.__loop8_item___noname8;
-                    var ns = __loop8_item.__loop8_item_ns;
-                    var Declarations = __loop8_item.__loop8_item_Declarations;
-                    var binding = __loop8_item.__loop8_item_binding;
-                    ++__loop8_iteration;
-                    if (binding.HasPolicy())
+                    Context.CreateFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src/META-INF/wsdl");
+                    Context.SetOutputFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src/META-INF/wsdl");
+                    XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/Oracle/" + Generated_GetClientProjectName() + "/src/META-INF/wsdl";
+                    XsdWsdlGenerator.Properties.GenerateSingleWsdl = true;
+                    XsdWsdlGenerator.Properties.GenerateSeparateXsdWsdlFolder = false;
+                    XsdWsdlGenerator.Properties.GeneratePolicies = false;
+                    int __loop6_iteration = 0;
+                    var __loop6_result =
+                        (from __loop6_tmp_item___noname6 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop6_tmp_item_ns in EnumerableExtensions.Enumerate((__loop6_tmp_item___noname6).GetEnumerator()).OfType<Namespace>()
+                        select
+                            new
+                            {
+                                __loop6_item___noname6 = __loop6_tmp_item___noname6,
+                                __loop6_item_ns = __loop6_tmp_item_ns,
+                            }).ToArray();
+                    foreach (var __loop6_item in __loop6_result)
                     {
-                        Context.SetOutput(binding.Name + "_Policy.xml");
-                        Context.Output(XsdWsdlGenerator.Generated_GeneratePolicy(ns, binding, true, true));
+                        var __noname6 = __loop6_item.__loop6_item___noname6;
+                        var ns = __loop6_item.__loop6_item_ns;
+                        ++__loop6_iteration;
+                        Context.SetOutput(ns.FullName + ".xsd");
+                        Context.Output(XsdWsdlGenerator.Generated_GenerateXsd(ns));
+                        int __loop7_iteration = 0;
+                        var __loop7_result =
+                            (from __loop7_tmp_item___noname7 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
+                            from __loop7_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop7_tmp_item___noname7.Declarations).GetEnumerator())
+                            from __loop7_tmp_item_endp in EnumerableExtensions.Enumerate((__loop7_tmp_item_Declarations).GetEnumerator()).OfType<Endpoint>()
+                            select
+                                new
+                                {
+                                    __loop7_item___noname7 = __loop7_tmp_item___noname7,
+                                    __loop7_item_Declarations = __loop7_tmp_item_Declarations,
+                                    __loop7_item_endp = __loop7_tmp_item_endp,
+                                }).ToArray();
+                        foreach (var __loop7_item in __loop7_result)
+                        {
+                            var __noname7 = __loop7_item.__loop7_item___noname7;
+                            var Declarations = __loop7_item.__loop7_item_Declarations;
+                            var endp = __loop7_item.__loop7_item_endp;
+                            ++__loop7_iteration;
+                            Context.SetOutput(endp.Name + ".wsdl");
+                            Context.Output(XsdWsdlGenerator.Generated_GenerateSingleWsdl(endp));
+                        }
+                    }
+                    Context.CreateFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src/META-INF/policies");
+                    Context.SetOutputFolder(Properties.OutputDir + "/Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src/META-INF/policies");
+                    int __loop8_iteration = 0;
+                    var __loop8_result =
+                        (from __loop8_tmp_item___noname8 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop8_tmp_item_ns in EnumerableExtensions.Enumerate((__loop8_tmp_item___noname8).GetEnumerator()).OfType<Namespace>()
+                        from __loop8_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop8_tmp_item_ns.Declarations).GetEnumerator())
+                        from __loop8_tmp_item_binding in EnumerableExtensions.Enumerate((__loop8_tmp_item_Declarations).GetEnumerator()).OfType<Binding>()
+                        select
+                            new
+                            {
+                                __loop8_item___noname8 = __loop8_tmp_item___noname8,
+                                __loop8_item_ns = __loop8_tmp_item_ns,
+                                __loop8_item_Declarations = __loop8_tmp_item_Declarations,
+                                __loop8_item_binding = __loop8_tmp_item_binding,
+                            }).ToArray();
+                    foreach (var __loop8_item in __loop8_result)
+                    {
+                        var __noname8 = __loop8_item.__loop8_item___noname8;
+                        var ns = __loop8_item.__loop8_item_ns;
+                        var Declarations = __loop8_item.__loop8_item_Declarations;
+                        var binding = __loop8_item.__loop8_item_binding;
+                        ++__loop8_iteration;
+                        if (binding.HasPolicy())
+                        {
+                            Context.SetOutput(binding.Name + "_Policy.xml");
+                            Context.Output(XsdWsdlGenerator.Generated_GeneratePolicy(ns, binding, true, true));
+                        }
                     }
                 }
                 Context.SetOutputFolder(Properties.OutputDir);
@@ -1582,7 +1622,7 @@ namespace SoaMetaModel
             }
             
             #endregion
-                #region functions from "C:\Users\Balazs\Documents\Visual Studio 2013\Projects\SoaMM\SoaGeneratorLib\GeneratorLib.mcg"
+                #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\GeneratorLib.mcg"
                 public string Generated_FirstLetterLow(string s)
                 {
                     return s.Substring(0, 1).ToLower() + s.Substring(1);

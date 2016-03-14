@@ -69,6 +69,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>IbmRadGeneratorLib.mcg</DependentUpon>
     </Compile>
+    <Compile Include="JavaRestGenerator.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JavaRestGenerator.mcg</DependentUpon>
+    </Compile>
+    <Compile Include="JavaRestGeneratorEx.Generated.cs">
+      <DependentUpon>JavaRestGeneratorEx.mcg</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="JavaGenerator.Generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -184,6 +194,14 @@
     <None Include="IbmRadGeneratorLib.mcg">
       <Generator>MCodeGenerator</Generator>
       <LastGenOutput>IbmRadGeneratorLib.Generated.cs</LastGenOutput>
+    </None>
+    <None Include="JavaRestGeneratorEx.mcg">
+      <Generator>MCodeGenerator</Generator>
+      <LastGenOutput>JavaRestGeneratorEx.Generated.cs</LastGenOutput>
+    </None>
+    <None Include="JavaRestGenerator.mcg">
+      <Generator>MCodeGenerator</Generator>
+      <LastGenOutput>JavaRestGenerator.Generated.cs</LastGenOutput>
     </None>
     <None Include="JavaGenerator.mcg">
       <Generator>MCodeGenerator</Generator>

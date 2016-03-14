@@ -10,7 +10,7 @@ namespace SoaMetaModel
     // Inheritace from 'Generator<List<object>, GeneratorContext>' and constructor is only generated into the main file.
     public partial class VSGenerator
     {
-            #region functions from "C:\Users\Balazs\Documents\Visual Studio 2013\Projects\SoaMM\SoaGeneratorLib\VSGeneratorLib.mcg"
+            #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\VSGeneratorLib.mcg"
             public List<string> Generated_GenerateService(Endpoint endp)
             {
                 List<string> __result = new List<string>();
