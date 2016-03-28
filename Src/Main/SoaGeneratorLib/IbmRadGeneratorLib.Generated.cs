@@ -10,7 +10,7 @@ namespace SoaMetaModel
     // Inheritace from 'Generator<List<object>, GeneratorContext>' and constructor is only generated into the main file.
     public partial class IbmRadGenerator
     {
-            #region functions from "C:\Users\Balazs\Documents\Visual Studio 2013\Projects\SoaMM\SoaGeneratorLib\IbmRadGeneratorLib.mcg"
+            #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\IbmRadGeneratorLib.mcg"
             public List<string> Generated_Generate_project()
             {
                 List<string> __result = new List<string>();

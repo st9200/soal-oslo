@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 include "GeneratorLib.mcg";
-import JavaGenerator;
+import JavaSoapGenerator;
+import JavaRestGenerator;
 import XsdWsdlGenerator;
 import EclipseCxfGenerator;
 
@@ -31,10 +32,13 @@ end configuration
 * Main function for creating folders and calling file templates.
 */
 function void Main()
-	JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
-	JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
-	JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-	JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;	
+	JavaSoapGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
+	JavaSoapGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+	JavaSoapGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
+	JavaSoapGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+	JavaSoapGenerator.Properties.GenerateOracleAnnotations = false;
+
+	JavaRestGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
 
 	EclipseCxfGenerator.Properties.ProjectName = Properties.ProjectName;
 	EclipseCxfGenerator.Properties.ResourcesDir = Properties.ResourcesDir;
@@ -46,7 +50,9 @@ function void Main()
 	Context.SetOutputFolder(Properties.OutputDir);
 	Context.CreateFolder("Tomcat");
 	// === SERVER ===
-	JavaGenerator.Properties.WsdlDirectory = "WEB-INF/wsdl/";
+	if (!Properties.GenerateRestfulWebService)
+		JavaSoapGenerator.Properties.WsdlDirectory = "WEB-INF/wsdl/";
+	end if
 	Context.CreateFolder("Tomcat/" + GetProjectName());
 	Context.SetOutput("Tomcat/" + GetProjectName() + "/.project");
 	Context.Output(EclipseCxfGenerator.Generate_server_project());
@@ -94,22 +100,36 @@ function void Main()
 		File.Copy(Properties.ResourcesDir+"/Java/server_keystore.jks", "Tomcat/" + GetProjectName() + "/src/server_keystore.jks", true);
 		File.Copy(Properties.ResourcesDir+"/Java/server_truststore.jks", "Tomcat/" + GetProjectName() + "/src/server_truststore.jks", true);
 	end if
-	JavaGenerator.Properties.GenerateServerStubs = true;
-	JavaGenerator.Properties.GenerateClientProxies = false;
-	JavaGenerator.GenerateJavaCode("Tomcat/" + GetProjectName() + "/src");
+	
+	if (Properties.GenerateRestfulWebService)	
+		JavaRestGenerator.Properties.GenerateServerStubs = true;		
+	else
+		JavaSoapGenerator.Properties.GenerateServerStubs = true;
+		JavaSoapGenerator.Properties.GenerateClientProxies = false;
+	end if
+
+	if (Properties.GenerateRestfulWebService)
+		JavaRestGenerator.GenerateJavaCode("Tomcat/" + GetProjectName() + "/src");
+	else
+		JavaSoapGenerator.GenerateJavaCode("Tomcat/" + GetProjectName() + "/src");
+	end if
 
 	Context.CreateFolder("Tomcat/" + GetProjectName() + "/WebContent/WEB-INF");
-	Context.SetOutputFolder(Properties.OutputDir+"/Tomcat/" + GetProjectName() + "/WebContent/WEB-INF");
-	XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir+"/Tomcat/" + GetProjectName() + "/WebContent/WEB-INF";
-	XsdWsdlGenerator.Properties.GenerateServiceUrl = true;
-	XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://localhost:9080/"+GetProjectName()+"/services/{0}";
-	loop(Instances->ns:typeof(Namespace))
-		XsdWsdlGenerator.GenerateXsdWsdl(ns);
-	end loop
+	if (!Properties.GenerateRestfulWebService)
+		Context.SetOutputFolder(Properties.OutputDir+"/Tomcat/" + GetProjectName() + "/WebContent/WEB-INF");
+		XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir+"/Tomcat/" + GetProjectName() + "/WebContent/WEB-INF";
+		XsdWsdlGenerator.Properties.GenerateServiceUrl = true;
+		XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://localhost:9080/"+GetProjectName()+"/services/{0}";
+		loop(Instances->ns:typeof(Namespace))
+			XsdWsdlGenerator.GenerateXsdWsdl(ns);
+		end loop
+	end if
 	Context.SetOutputFolder(Properties.OutputDir);
 
 	// === CLIENT ===
-	JavaGenerator.Properties.WsdlDirectory = "META-INF";
+	if (!Properties.GenerateRestfulWebService)
+		JavaSoapGenerator.Properties.WsdlDirectory = "META-INF";
+	end if
 	Context.CreateFolder("Tomcat/" + GetClientProjectName());
 	Context.SetOutput("Tomcat/" + GetClientProjectName() + "/.project");
 	Context.Output(EclipseCxfGenerator.Generate_client_project());
@@ -143,9 +163,19 @@ function void Main()
 		File.Copy(Properties.ResourcesDir+"/Java/client_keystore.jks", "Tomcat/" + GetClientProjectName() + "/src/META-INF/client_keystore.jks", true);
 		File.Copy(Properties.ResourcesDir+"/Java/client_truststore.jks", "Tomcat/" + GetClientProjectName() + "/src/META-INF/client_truststore.jks", true);
 	end if
-	JavaGenerator.Properties.GenerateServerStubs = false;
-	JavaGenerator.Properties.GenerateClientProxies = true;
-	JavaGenerator.GenerateJavaCode("Tomcat/" + GetClientProjectName() + "/src");
+
+	if (Properties.GenerateRestfulWebService)
+		JavaRestGenerator.Properties.GenerateServerStubs = false;		
+	else
+		JavaSoapGenerator.Properties.GenerateServerStubs = false;
+		JavaSoapGenerator.Properties.GenerateClientProxies = true;
+	end if
+
+	if (Properties.GenerateRestfulWebService)
+		JavaRestGenerator.GenerateJavaCode("Tomcat/" + GetClientProjectName() + "/src");
+	else
+		JavaSoapGenerator.GenerateJavaCode("Tomcat/" + GetClientProjectName() + "/src");
+	end if
 	loop(Instances->ns:typeof(Namespace))
 		Context.CreateFolder("Tomcat/" + GetClientProjectName() + "/src/"+GetPackage(ns).ToLower()+"client");
 		Context.SetOutput("Tomcat/" + GetClientProjectName() + "/src/"+GetPackage(ns).ToLower()+"client/Program.java");
@@ -153,11 +183,13 @@ function void Main()
 	end loop
 
 	Context.CreateFolder("Tomcat/" + GetClientProjectName() + "/src/META-INF");
-	Context.SetOutputFolder(Properties.OutputDir+"/Tomcat/" + GetClientProjectName() + "/src/META-INF");
-	XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir+"/Tomcat/" + GetClientProjectName() + "/META-INF";
-	loop(Instances->ns:typeof(Namespace))
-		XsdWsdlGenerator.GenerateXsdWsdl(ns);
-	end loop
+	if (!Properties.GenerateRestfulWebService)
+		Context.SetOutputFolder(Properties.OutputDir+"/Tomcat/" + GetClientProjectName() + "/src/META-INF");
+		XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir+"/Tomcat/" + GetClientProjectName() + "/META-INF";
+		loop(Instances->ns:typeof(Namespace))
+			XsdWsdlGenerator.GenerateXsdWsdl(ns);
+		end loop
+	end if
 	Context.SetOutputFolder(Properties.OutputDir);
 end function
 

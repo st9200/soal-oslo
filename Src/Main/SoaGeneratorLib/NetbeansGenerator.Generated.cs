@@ -11,14 +11,16 @@ namespace SoaMetaModel
     // The main file of the generator.
     public partial class NetbeansGenerator : Generator<IEnumerable<SoaObject>, GeneratorContext>
     {
-        public JavaGenerator JavaGenerator { get; private set; }
+        public JavaRestGenerator JavaRestGenerator { get; private set; }
+        public JavaSoapGenerator JavaSoapGenerator { get; private set; }
         public XsdWsdlGenerator XsdWsdlGenerator { get; private set; }
         
         public NetbeansGenerator(IEnumerable<SoaObject> instances, GeneratorContext context)
             : base(instances, context)
         {
             this.Properties = new PropertyGroup_Properties();
-            this.JavaGenerator = new JavaGenerator(instances, context);
+            this.JavaRestGenerator = new JavaRestGenerator(instances, context);
+            this.JavaSoapGenerator = new JavaSoapGenerator(instances, context);
             this.XsdWsdlGenerator = new XsdWsdlGenerator(instances, context);
         }
         
@@ -57,10 +59,12 @@ namespace SoaMetaModel
             
             public override void Generated_Main()
             {
-                JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
-                JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
-                JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-                JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+                JavaSoapGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
+                JavaSoapGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+                JavaSoapGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
+                JavaSoapGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+                JavaSoapGenerator.Properties.GenerateOracleAnnotations = false;
+                JavaRestGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
                 Context.SetOutputFolder(Properties.OutputDir);
                 Context.CreateFolder("Netbeans");
                 Context.CreateFolder("Netbeans/" + Generated_GetProjectName());
@@ -84,9 +88,23 @@ namespace SoaMetaModel
                 Context.CreateFolder("Netbeans/" + Generated_GetProjectName() + "/src/conf");
                 File.Copy(Properties.ResourcesDir + "/Netbeans/MANIFEST.MF", "Netbeans/" + Generated_GetProjectName() + "/src/conf/MANIFEST.MF", true);
                 Context.CreateFolder("Netbeans/" + Generated_GetProjectName() + "/src/java");
-                JavaGenerator.Properties.GenerateServerStubs = true;
-                JavaGenerator.Properties.GenerateClientProxies = false;
-                JavaGenerator.Generated_GenerateJavaCode("Netbeans/" + Generated_GetProjectName() + "/src/java");
+                if (Properties.GenerateRestfulWebService)
+                {
+                    JavaRestGenerator.Properties.GenerateServerStubs = true;
+                }
+                else
+                {
+                    JavaSoapGenerator.Properties.GenerateServerStubs = true;
+                    JavaSoapGenerator.Properties.GenerateClientProxies = false;
+                }
+                if (Properties.GenerateRestfulWebService)
+                {
+                    JavaRestGenerator.Generated_GenerateJavaCode("Netbeans/" + Generated_GetProjectName() + "/src/java");
+                }
+                else
+                {
+                    JavaSoapGenerator.Generated_GenerateJavaCode("Netbeans/" + Generated_GetProjectName() + "/src/java");
+                }
                 Context.CreateFolder("Netbeans/" + Generated_GetProjectName() + "/src/java/META-INF");
                 File.Copy(Properties.ResourcesDir + "/Java/server_keystore.jks", "Netbeans/" + Generated_GetProjectName() + "/src/java/META-INF/server_keystore.jks", true);
                 File.Copy(Properties.ResourcesDir + "/Java/server_truststore.jks", "Netbeans/" + Generated_GetProjectName() + "/src/java/META-INF/server_truststore.jks", true);
@@ -107,31 +125,44 @@ namespace SoaMetaModel
                 }
                 File.Copy(Properties.ResourcesDir + "/Netbeans/web.xml", "Netbeans/" + Generated_GetProjectName() + "/web/WEB-INF/web.xml", true);
                 Context.CreateFolder("Netbeans/" + Generated_GetProjectName() + "/web/WEB-INF");
-                Context.SetOutputFolder(Properties.OutputDir + "/Netbeans/" + Generated_GetProjectName() + "/web/WEB-INF");
-                XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/Netbeans/" + Generated_GetProjectName() + "/web/WEB-INF";
-                XsdWsdlGenerator.Properties.GenerateMetroJksService = Properties.GenerateMetroJksService;
-                XsdWsdlGenerator.Properties.GenerateMetroJksClient = false;
-                int __loop1_iteration = 0;
-                var __loop1_result =
-                    (from __loop1_tmp_item___noname1 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                    from __loop1_tmp_item_ns in EnumerableExtensions.Enumerate((__loop1_tmp_item___noname1).GetEnumerator()).OfType<Namespace>()
-                    select
-                        new
-                        {
-                            __loop1_item___noname1 = __loop1_tmp_item___noname1,
-                            __loop1_item_ns = __loop1_tmp_item_ns,
-                        }).ToArray();
-                foreach (var __loop1_item in __loop1_result)
+                if (!Properties.GenerateRestfulWebService)
                 {
-                    var __noname1 = __loop1_item.__loop1_item___noname1;
-                    var ns = __loop1_item.__loop1_item_ns;
-                    ++__loop1_iteration;
-                    XsdWsdlGenerator.Generated_GenerateXsdWsdl(ns);
+                    Context.SetOutputFolder(Properties.OutputDir + "/Netbeans/" + Generated_GetProjectName() + "/web/WEB-INF");
+                    XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/Netbeans/" + Generated_GetProjectName() + "/web/WEB-INF";
+                    XsdWsdlGenerator.Properties.GenerateMetroJksService = Properties.GenerateMetroJksService;
+                    XsdWsdlGenerator.Properties.GenerateMetroJksClient = false;
+                    int __loop1_iteration = 0;
+                    var __loop1_result =
+                        (from __loop1_tmp_item___noname1 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop1_tmp_item_ns in EnumerableExtensions.Enumerate((__loop1_tmp_item___noname1).GetEnumerator()).OfType<Namespace>()
+                        select
+                            new
+                            {
+                                __loop1_item___noname1 = __loop1_tmp_item___noname1,
+                                __loop1_item_ns = __loop1_tmp_item_ns,
+                            }).ToArray();
+                    foreach (var __loop1_item in __loop1_result)
+                    {
+                        var __noname1 = __loop1_item.__loop1_item___noname1;
+                        var ns = __loop1_item.__loop1_item_ns;
+                        ++__loop1_iteration;
+                        XsdWsdlGenerator.Generated_GenerateXsdWsdl(ns);
+                    }
                 }
                 Context.SetOutputFolder(Properties.OutputDir);
-                JavaGenerator.Properties.WsdlDirectory = "META-INF/wsdl/";
-                JavaGenerator.Properties.GenerateServerStubs = false;
-                JavaGenerator.Properties.GenerateClientProxies = true;
+                if (!Properties.GenerateRestfulWebService)
+                {
+                    JavaSoapGenerator.Properties.WsdlDirectory = "META-INF/wsdl/";
+                }
+                if (Properties.GenerateRestfulWebService)
+                {
+                    JavaRestGenerator.Properties.GenerateServerStubs = false;
+                }
+                else
+                {
+                    JavaSoapGenerator.Properties.GenerateServerStubs = false;
+                    JavaSoapGenerator.Properties.GenerateClientProxies = true;
+                }
                 Context.CreateFolder("Netbeans/" + Generated_GetClientProjectName());
                 Context.CreateFolder("Netbeans/" + Generated_GetClientProjectName());
                 Context.SetOutput("Netbeans/" + Generated_GetClientProjectName() + "/build.xml");
@@ -147,51 +178,68 @@ namespace SoaMetaModel
                 Context.Output(Generated_Generate_Client_manifest_mf());
                 Context.CreateFolder("Netbeans/" + Generated_GetClientProjectName() + "/src");
                 Context.CreateFolder("Netbeans/" + Generated_GetClientProjectName() + "/src/META-INF");
-                Context.SetOutputFolder(Properties.OutputDir + "/Netbeans/" + Generated_GetClientProjectName() + "/src/META-INF");
-                XsdWsdlGenerator.Properties.GenerateMetroJksService = false;
-                XsdWsdlGenerator.Properties.GenerateMetroJksClient = Properties.GenerateMetroJksClient;
-                XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/Netbeans/" + Generated_GetClientProjectName() + "/META-INF";
-                int __loop2_iteration = 0;
-                var __loop2_result =
-                    (from __loop2_tmp_item___noname2 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                    from __loop2_tmp_item_ns in EnumerableExtensions.Enumerate((__loop2_tmp_item___noname2).GetEnumerator()).OfType<Namespace>()
-                    select
-                        new
-                        {
-                            __loop2_item___noname2 = __loop2_tmp_item___noname2,
-                            __loop2_item_ns = __loop2_tmp_item_ns,
-                        }).ToArray();
-                foreach (var __loop2_item in __loop2_result)
+                if (!Properties.GenerateRestfulWebService)
                 {
-                    var __noname2 = __loop2_item.__loop2_item___noname2;
-                    var ns = __loop2_item.__loop2_item_ns;
-                    ++__loop2_iteration;
-                    XsdWsdlGenerator.Generated_GenerateXsdWsdl(ns);
-                    Context.SetOutputFolder(Properties.OutputDir + "/Netbeans/" + Generated_GetClientProjectName() + "/src/META-INF/wsdl");
-                    XsdWsdlGenerator.Properties.GenerateServiceUrl = true;
-                    Context.SetOutput(ns.FullName + "EndpointWcf.wsdl");
-                    XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://localhost/WsInteropTest/Services/{0}.svc";
-                    Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
-                    Context.SetOutput(ns.FullName + "EndpointMetro.wsdl");
-                    XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://localhost:8080/WsInteropTest/services/{0}";
-                    Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
-                    Context.SetOutput(ns.FullName + "EndpointJBossCxf.wsdl");
-                    XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://localhost:8080/WsInteropTest/services/{0}";
-                    Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
-                    Context.SetOutput(ns.FullName + "EndpointTomcatCxf.wsdl");
-                    XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://localhost:9080/WsInteropTest/services/{0}";
-                    Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
-                    Context.SetOutput(ns.FullName + "EndpointOracle.wsdl");
-                    XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://192.168.136.128:7101/WsInteropTest/services/{0}";
-                    Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
-                    Context.SetOutput(ns.FullName + "EndpointIbm.wsdl");
-                    XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://192.168.136.128:9080/WsInteropTest/{0}";
-                    Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
+                    Context.SetOutputFolder(Properties.OutputDir + "/Netbeans/" + Generated_GetClientProjectName() + "/src/META-INF");
+                    XsdWsdlGenerator.Properties.GenerateMetroJksService = false;
+                    XsdWsdlGenerator.Properties.GenerateMetroJksClient = Properties.GenerateMetroJksClient;
+                    XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/Netbeans/" + Generated_GetClientProjectName() + "/META-INF";
+                    int __loop2_iteration = 0;
+                    var __loop2_result =
+                        (from __loop2_tmp_item___noname2 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop2_tmp_item_ns in EnumerableExtensions.Enumerate((__loop2_tmp_item___noname2).GetEnumerator()).OfType<Namespace>()
+                        select
+                            new
+                            {
+                                __loop2_item___noname2 = __loop2_tmp_item___noname2,
+                                __loop2_item_ns = __loop2_tmp_item_ns,
+                            }).ToArray();
+                    foreach (var __loop2_item in __loop2_result)
+                    {
+                        var __noname2 = __loop2_item.__loop2_item___noname2;
+                        var ns = __loop2_item.__loop2_item_ns;
+                        ++__loop2_iteration;
+                        XsdWsdlGenerator.Generated_GenerateXsdWsdl(ns);
+                        Context.SetOutputFolder(Properties.OutputDir + "/Netbeans/" + Generated_GetClientProjectName() + "/src/META-INF/wsdl");
+                        XsdWsdlGenerator.Properties.GenerateServiceUrl = true;
+                        Context.SetOutput(ns.FullName + "EndpointWcf.wsdl");
+                        XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://localhost/WsInteropTest/Services/{0}.svc";
+                        Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
+                        Context.SetOutput(ns.FullName + "EndpointMetro.wsdl");
+                        XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://localhost:8080/WsInteropTest/services/{0}";
+                        Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
+                        Context.SetOutput(ns.FullName + "EndpointJBossCxf.wsdl");
+                        XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://localhost:8080/WsInteropTest/services/{0}";
+                        Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
+                        Context.SetOutput(ns.FullName + "EndpointTomcatCxf.wsdl");
+                        XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://localhost:9080/WsInteropTest/services/{0}";
+                        Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
+                        Context.SetOutput(ns.FullName + "EndpointOracle.wsdl");
+                        XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://192.168.136.128:7101/WsInteropTest/services/{0}";
+                        Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
+                        Context.SetOutput(ns.FullName + "EndpointIbm.wsdl");
+                        XsdWsdlGenerator.Properties.ServiceUrlPattern = "http://192.168.136.128:9080/WsInteropTest/{0}";
+                        Context.Output(XsdWsdlGenerator.Generated_GenerateWsdlEndpoint(ns));
+                    }
                 }
                 Context.SetOutputFolder(Properties.OutputDir);
-                JavaGenerator.Properties.GenerateServerStubs = false;
-                JavaGenerator.Properties.GenerateClientProxies = true;
-                JavaGenerator.Generated_GenerateJavaCode("Netbeans/" + Generated_GetClientProjectName() + "/src");
+                if (Properties.GenerateRestfulWebService)
+                {
+                    JavaRestGenerator.Properties.GenerateServerStubs = false;
+                }
+                else
+                {
+                    JavaSoapGenerator.Properties.GenerateServerStubs = false;
+                    JavaSoapGenerator.Properties.GenerateClientProxies = true;
+                }
+                if (Properties.GenerateRestfulWebService)
+                {
+                    JavaRestGenerator.Generated_GenerateJavaCode("Netbeans/" + Generated_GetClientProjectName() + "/src");
+                }
+                else
+                {
+                    JavaSoapGenerator.Generated_GenerateJavaCode("Netbeans/" + Generated_GetClientProjectName() + "/src");
+                }
                 int __loop3_iteration = 0;
                 var __loop3_result =
                     (from __loop3_tmp_item___noname3 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())

@@ -10,7 +10,7 @@ namespace SoaMetaModel
     // Inheritace from 'Generator<List<object>, GeneratorContext>' and constructor is only generated into the main file.
     public partial class JavaGenerator
     {
-            #region functions from "C:\Users\sb\Documents\VersionControl\soamm_trunk\SoaMM\VisualStudio\SoaMM\SoaGeneratorLib\JavaGeneratorEx.mcg"
+            #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\JavaGeneratorEx.mcg"
             public string Generated_GenerateExpression(Expression expr)
             {
                 if (expr.Parent != null && expr.Parent.NodeType > expr.NodeType && expr.NodeType != ExpressionType.Variable && expr.NodeType != ExpressionType.Constant)

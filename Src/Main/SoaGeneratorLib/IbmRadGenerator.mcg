@@ -5,7 +5,8 @@ using System.Text;
 using System.IO;
 using Ionic.Zip;
 include "GeneratorLib.mcg";
-import JavaGenerator;
+import JavaSoapGenerator;
+import JavaRestGenerator;
 import XsdWsdlGenerator;
 
 configuration
@@ -28,10 +29,13 @@ end configuration
 * Main function for creating folders and calling file templates.
 */
 function void Main()
-	JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
-	JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
-	JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-	JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;	
+	JavaSoapGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
+	JavaSoapGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+	JavaSoapGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
+	JavaSoapGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+	JavaSoapGenerator.Properties.GenerateOracleAnnotations = false;
+
+	JavaRestGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
 
 	XsdWsdlGenerator.Properties.GeneratePolicies = false;
 	XsdWsdlGenerator.Properties.Ibm = true;
@@ -89,10 +93,19 @@ function void Main()
 	Context.Output(Generate_ibm_web_bnd());
 	Context.SetOutput("IbmRad/" + GetProjectName() + "/WebContent/WEB-INF/ibm-web-ext.xml");
 	Context.Output(Generate_ibm_web_ext());
+		
+	if (Properties.GenerateRestfulWebService)
+		JavaRestGenerator.Properties.GenerateServerStubs = true;		
+	else
+		JavaSoapGenerator.Properties.GenerateServerStubs = true;
+		JavaSoapGenerator.Properties.GenerateClientProxies = false;
+	end if
 	
-	JavaGenerator.Properties.GenerateServerStubs = true;
-	JavaGenerator.Properties.GenerateClientProxies = false;
-	JavaGenerator.GenerateJavaCode("IbmRad/" + GetProjectName() + "/src");
+	if (Properties.GenerateRestfulWebService)
+		JavaRestGenerator.GenerateJavaCode("IbmRad/" + GetProjectName() + "/src");
+	else
+		JavaSoapGenerator.GenerateJavaCode("IbmRad/" + GetProjectName() + "/src");
+	end if
 
 	Context.CreateFolder("IbmRad/" + GetProjectName() + "/WebContent/WEB-INF");
 	Context.SetOutputFolder(Properties.OutputDir+"/IbmRad/" + GetProjectName() + "/WebContent/WEB-INF");

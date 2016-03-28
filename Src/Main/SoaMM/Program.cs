@@ -122,7 +122,9 @@ namespace SoaMM
                             case "--rest":
                                 GenerateRestfulWebService = true;
                                 GenerateXsdWsdl = false;
-                                Console.WriteLine("[WARNING] --rest option disables xsd/wsdl generation according to RESTful standards!");
+                                GenerateNoImplementationDelegates = true;
+                                GenerateImplementationBase = false;
+                                Console.WriteLine("[WARNING] --rest option disables xsd/wsdl generation according to RESTful standards! It also ignores implementation bases and delegates.");                                
                                 break;
                             default:
                                 throw new Exception("Invalid option: " + args[i]);

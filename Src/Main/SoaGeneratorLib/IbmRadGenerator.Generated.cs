@@ -12,14 +12,16 @@ namespace SoaMetaModel
     // The main file of the generator.
     public partial class IbmRadGenerator : Generator<IEnumerable<SoaObject>, GeneratorContext>
     {
-        public JavaGenerator JavaGenerator { get; private set; }
+        public JavaRestGenerator JavaRestGenerator { get; private set; }
+        public JavaSoapGenerator JavaSoapGenerator { get; private set; }
         public XsdWsdlGenerator XsdWsdlGenerator { get; private set; }
         
         public IbmRadGenerator(IEnumerable<SoaObject> instances, GeneratorContext context)
             : base(instances, context)
         {
             this.Properties = new PropertyGroup_Properties();
-            this.JavaGenerator = new JavaGenerator(instances, context);
+            this.JavaRestGenerator = new JavaRestGenerator(instances, context);
+            this.JavaSoapGenerator = new JavaSoapGenerator(instances, context);
             this.XsdWsdlGenerator = new XsdWsdlGenerator(instances, context);
         }
         
@@ -52,10 +54,12 @@ namespace SoaMetaModel
             
             public override void Generated_Main()
             {
-                JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
-                JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
-                JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-                JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+                JavaSoapGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
+                JavaSoapGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+                JavaSoapGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
+                JavaSoapGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+                JavaSoapGenerator.Properties.GenerateOracleAnnotations = false;
+                JavaRestGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
                 XsdWsdlGenerator.Properties.GeneratePolicies = false;
                 XsdWsdlGenerator.Properties.Ibm = true;
                 XsdWsdlGenerator.Properties.XPathSignEncrypt = true;
@@ -107,9 +111,23 @@ namespace SoaMetaModel
                 Context.Output(Generated_Generate_ibm_web_bnd());
                 Context.SetOutput("IbmRad/" + Generated_GetProjectName() + "/WebContent/WEB-INF/ibm-web-ext.xml");
                 Context.Output(Generated_Generate_ibm_web_ext());
-                JavaGenerator.Properties.GenerateServerStubs = true;
-                JavaGenerator.Properties.GenerateClientProxies = false;
-                JavaGenerator.Generated_GenerateJavaCode("IbmRad/" + Generated_GetProjectName() + "/src");
+                if (Properties.GenerateRestfulWebService)
+                {
+                    JavaRestGenerator.Properties.GenerateServerStubs = true;
+                }
+                else
+                {
+                    JavaSoapGenerator.Properties.GenerateServerStubs = true;
+                    JavaSoapGenerator.Properties.GenerateClientProxies = false;
+                }
+                if (Properties.GenerateRestfulWebService)
+                {
+                    JavaRestGenerator.Generated_GenerateJavaCode("IbmRad/" + Generated_GetProjectName() + "/src");
+                }
+                else
+                {
+                    JavaSoapGenerator.Generated_GenerateJavaCode("IbmRad/" + Generated_GetProjectName() + "/src");
+                }
                 Context.CreateFolder("IbmRad/" + Generated_GetProjectName() + "/WebContent/WEB-INF");
                 Context.SetOutputFolder(Properties.OutputDir + "/IbmRad/" + Generated_GetProjectName() + "/WebContent/WEB-INF");
                 XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/IbmRad/" + Generated_GetProjectName() + "/WebContent/WEB-INF";

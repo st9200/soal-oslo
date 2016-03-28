@@ -6,6 +6,7 @@ using System.IO;
 using Ionic.Zip;
 include "GeneratorLib.mcg";
 import JavaGenerator;
+import JavaSoapGenerator;
 import JavaRestGenerator;
 import XsdWsdlGenerator;
 
@@ -29,17 +30,14 @@ end configuration
 * Main function for creating folders and calling file templates.
 */
 function void Main()
-	if (Properties.GenerateRestfulWebService)
-		JavaRestGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
-		JavaRestGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
-		JavaRestGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-		JavaRestGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;		
-	else	
-		JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
-		JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
-		JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-		JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;		
-	end if
+	JavaSoapGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
+	JavaSoapGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+	JavaSoapGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
+	JavaSoapGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+	JavaSoapGenerator.Properties.GenerateOracleAnnotations = true;
+
+	JavaRestGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+			
 	Context.SetOutputFolder(Properties.OutputDir);
 	Context.CreateFolder("Oracle");
 	Context.SetOutput("Oracle/" + GetProjectName() + "_weblogic_script.py");
@@ -52,23 +50,30 @@ function void Main()
 	Context.Output(GenerateProjectFile());
 
 	Context.CreateFolder("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src");
+	if (!Properties.GenerateRestfulWebService)
+		JavaSoapGenerator.Properties.WsdlSuffix = "";
+	end if
+
 	if (Properties.GenerateRestfulWebService)
-		JavaRestGenerator.Properties.GenerateOracleAnnotations = true;
-		JavaRestGenerator.Properties.GenerateServerStubs = true;
-		JavaRestGenerator.Properties.GenerateClientProxies = false;		
-		JavaRestGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src");		
+		JavaRestGenerator.Properties.GenerateServerStubs = true;		
 	else
-		JavaGenerator.Properties.WsdlSuffix = "";
-		JavaGenerator.Properties.GenerateOracleAnnotations = true;
-		JavaGenerator.Properties.GenerateServerStubs = true;
-		JavaGenerator.Properties.GenerateClientProxies = false;
-		JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
-		JavaGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src");
+		JavaSoapGenerator.Properties.GenerateServerStubs = true;
+		JavaSoapGenerator.Properties.GenerateClientProxies = false;
+	end if
+
+	if (!Properties.GenerateRestfulWebService)
+		JavaSoapGenerator.Properties.SeparateWsdlsForEndpoints = true;
+	end if
+	if (Properties.GenerateRestfulWebService)
+		JavaRestGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src");
+	else
+		JavaSoapGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src");
 		loop(Instances->endp:typeof(Endpoint))
 			Context.SetOutput("Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/src/"+JavaGenerator.NamespaceToPath(endp.Namespace)+"/"+endp.Name+".jaxrpc");
 			Context.Output(GenerateJaxRpc(endp));
 		end loop
 	end if
+	
 
 	Context.CreateFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF");
 	Context.SetOutputFolder(Properties.OutputDir+"/Oracle/" + GetProjectName() + "App/" + GetProjectName() + "/public_html/WEB-INF");
@@ -107,19 +112,25 @@ function void Main()
 	Context.Output(GenerateClientProjectFile());
 
 	Context.CreateFolder("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src");
-	if (Properties.GenerateRestfulWebService)				
-		JavaRestGenerator.Properties.GenerateOracleAnnotations = true;
-		JavaRestGenerator.Properties.GenerateServerStubs = false;
-		JavaRestGenerator.Properties.GenerateClientProxies = true;		
-		JavaRestGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src");		
+	if (!Properties.GenerateRestfulWebService)
+		JavaSoapGenerator.Properties.WsdlSuffix = "";
+		JavaSoapGenerator.Properties.WsdlDirectory = "META-INF/wsdl/";
+	end if
+
+	if (Properties.GenerateRestfulWebService)
+		JavaRestGenerator.Properties.GenerateServerStubs = false;		
 	else
-		JavaGenerator.Properties.WsdlSuffix = "";
-		JavaGenerator.Properties.WsdlDirectory = "META-INF/wsdl/";
-		JavaGenerator.Properties.GenerateOracleAnnotations = true;
-		JavaGenerator.Properties.GenerateServerStubs = false;
-		JavaGenerator.Properties.GenerateClientProxies = true;
-		JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
-		JavaGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src");
+		JavaSoapGenerator.Properties.GenerateServerStubs = false;
+		JavaSoapGenerator.Properties.GenerateClientProxies = true;
+	end if
+
+	if (!Properties.GenerateRestfulWebService)
+		JavaSoapGenerator.Properties.SeparateWsdlsForEndpoints = true;
+	end if
+	if (Properties.GenerateRestfulWebService)
+		JavaRestGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src");
+	else
+		JavaSoapGenerator.GenerateJavaCode("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src");
 		loop(Instances->endp:typeof(Endpoint))
 			Context.SetOutput("Oracle/" + GetProjectName() + "App/" + GetClientProjectName() + "/src/"+JavaGenerator.NamespaceToPath(endp.Namespace)+"/"+endp.Name+".proxy");
 			Context.Output(GenerateJaxRpcProxy(endp));

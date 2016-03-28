@@ -14,6 +14,7 @@ namespace SoaMetaModel
     {
         public JavaGenerator JavaGenerator { get; private set; }
         public JavaRestGenerator JavaRestGenerator { get; private set; }
+        public JavaSoapGenerator JavaSoapGenerator { get; private set; }
         public XsdWsdlGenerator XsdWsdlGenerator { get; private set; }
         
         public OracleGenerator(IEnumerable<SoaObject> instances, GeneratorContext context)
@@ -22,6 +23,7 @@ namespace SoaMetaModel
             this.Properties = new PropertyGroup_Properties();
             this.JavaGenerator = new JavaGenerator(instances, context);
             this.JavaRestGenerator = new JavaRestGenerator(instances, context);
+            this.JavaSoapGenerator = new JavaSoapGenerator(instances, context);
             this.XsdWsdlGenerator = new XsdWsdlGenerator(instances, context);
         }
         
@@ -54,20 +56,12 @@ namespace SoaMetaModel
             
             public override void Generated_Main()
             {
-                if (Properties.GenerateRestfulWebService)
-                {
-                    JavaRestGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
-                    JavaRestGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
-                    JavaRestGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-                    JavaRestGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
-                }
-                else
-                {
-                    JavaGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
-                    JavaGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
-                    JavaGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
-                    JavaGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
-                }
+                JavaSoapGenerator.Properties.NoImplementationDelegates = Properties.NoImplementationDelegates;
+                JavaSoapGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
+                JavaSoapGenerator.Properties.GenerateProxyFeatureConstructors = Properties.GenerateProxyFeatureConstructors;
+                JavaSoapGenerator.Properties.GenerateImplementationBase = Properties.GenerateImplementationBase;
+                JavaSoapGenerator.Properties.GenerateOracleAnnotations = true;
+                JavaRestGenerator.Properties.ThrowNotImplementedException = Properties.ThrowNotImplementedException;
                 Context.SetOutputFolder(Properties.OutputDir);
                 Context.CreateFolder("Oracle");
                 Context.SetOutput("Oracle/" + Generated_GetProjectName() + "_weblogic_script.py");
@@ -79,21 +73,30 @@ namespace SoaMetaModel
                 Context.SetOutput("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/" + Generated_GetProjectName() + ".jpr");
                 Context.Output(Generated_GenerateProjectFile());
                 Context.CreateFolder("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/src");
+                if (!Properties.GenerateRestfulWebService)
+                {
+                    JavaSoapGenerator.Properties.WsdlSuffix = "";
+                }
                 if (Properties.GenerateRestfulWebService)
                 {
-                    JavaRestGenerator.Properties.GenerateOracleAnnotations = true;
                     JavaRestGenerator.Properties.GenerateServerStubs = true;
-                    JavaRestGenerator.Properties.GenerateClientProxies = false;
+                }
+                else
+                {
+                    JavaSoapGenerator.Properties.GenerateServerStubs = true;
+                    JavaSoapGenerator.Properties.GenerateClientProxies = false;
+                }
+                if (!Properties.GenerateRestfulWebService)
+                {
+                    JavaSoapGenerator.Properties.SeparateWsdlsForEndpoints = true;
+                }
+                if (Properties.GenerateRestfulWebService)
+                {
                     JavaRestGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/src");
                 }
                 else
                 {
-                    JavaGenerator.Properties.WsdlSuffix = "";
-                    JavaGenerator.Properties.GenerateOracleAnnotations = true;
-                    JavaGenerator.Properties.GenerateServerStubs = true;
-                    JavaGenerator.Properties.GenerateClientProxies = false;
-                    JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
-                    JavaGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/src");
+                    JavaSoapGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetProjectName() + "/src");
                     int __loop1_iteration = 0;
                     var __loop1_result =
                         (from __loop1_tmp_item___noname1 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
@@ -199,22 +202,31 @@ namespace SoaMetaModel
                 Context.SetOutput("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/" + Generated_GetClientProjectName() + ".jpr");
                 Context.Output(Generated_GenerateClientProjectFile());
                 Context.CreateFolder("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src");
+                if (!Properties.GenerateRestfulWebService)
+                {
+                    JavaSoapGenerator.Properties.WsdlSuffix = "";
+                    JavaSoapGenerator.Properties.WsdlDirectory = "META-INF/wsdl/";
+                }
                 if (Properties.GenerateRestfulWebService)
                 {
-                    JavaRestGenerator.Properties.GenerateOracleAnnotations = true;
                     JavaRestGenerator.Properties.GenerateServerStubs = false;
-                    JavaRestGenerator.Properties.GenerateClientProxies = true;
+                }
+                else
+                {
+                    JavaSoapGenerator.Properties.GenerateServerStubs = false;
+                    JavaSoapGenerator.Properties.GenerateClientProxies = true;
+                }
+                if (!Properties.GenerateRestfulWebService)
+                {
+                    JavaSoapGenerator.Properties.SeparateWsdlsForEndpoints = true;
+                }
+                if (Properties.GenerateRestfulWebService)
+                {
                     JavaRestGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src");
                 }
                 else
                 {
-                    JavaGenerator.Properties.WsdlSuffix = "";
-                    JavaGenerator.Properties.WsdlDirectory = "META-INF/wsdl/";
-                    JavaGenerator.Properties.GenerateOracleAnnotations = true;
-                    JavaGenerator.Properties.GenerateServerStubs = false;
-                    JavaGenerator.Properties.GenerateClientProxies = true;
-                    JavaGenerator.Properties.SeparateWsdlsForEndpoints = true;
-                    JavaGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src");
+                    JavaSoapGenerator.Generated_GenerateJavaCode("Oracle/" + Generated_GetProjectName() + "App/" + Generated_GetClientProjectName() + "/src");
                     int __loop5_iteration = 0;
                     var __loop5_result =
                         (from __loop5_tmp_item___noname5 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())

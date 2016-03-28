@@ -69,20 +69,20 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>IbmRadGeneratorLib.mcg</DependentUpon>
     </Compile>
+    <Compile Include="JavaGenerator.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JavaGenerator.mcg</DependentUpon>
+    </Compile>
     <Compile Include="JavaRestGenerator.Generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>JavaRestGenerator.mcg</DependentUpon>
     </Compile>
-    <Compile Include="JavaRestGeneratorEx.Generated.cs">
-      <DependentUpon>JavaRestGeneratorEx.mcg</DependentUpon>
+    <Compile Include="JavaSoapGenerator.Generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="JavaGenerator.Generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>JavaGenerator.mcg</DependentUpon>
+      <DependentUpon>JavaSoapGenerator.mcg</DependentUpon>
     </Compile>
     <Compile Include="JBossCxfGenerator.Generated.cs">
       <AutoGen>True</AutoGen>
@@ -195,17 +195,17 @@
       <Generator>MCodeGenerator</Generator>
       <LastGenOutput>IbmRadGeneratorLib.Generated.cs</LastGenOutput>
     </None>
-    <None Include="JavaRestGeneratorEx.mcg">
+    <None Include="JavaGenerator.mcg">
       <Generator>MCodeGenerator</Generator>
-      <LastGenOutput>JavaRestGeneratorEx.Generated.cs</LastGenOutput>
+      <LastGenOutput>JavaGenerator.Generated.cs</LastGenOutput>
     </None>
     <None Include="JavaRestGenerator.mcg">
       <Generator>MCodeGenerator</Generator>
       <LastGenOutput>JavaRestGenerator.Generated.cs</LastGenOutput>
     </None>
-    <None Include="JavaGenerator.mcg">
+    <None Include="JavaSoapGenerator.mcg">
       <Generator>MCodeGenerator</Generator>
-      <LastGenOutput>JavaGenerator.Generated.cs</LastGenOutput>
+      <LastGenOutput>JavaSoapGenerator.Generated.cs</LastGenOutput>
     </None>
     <None Include="JBossCxfGenerator.mcg">
       <Generator>MCodeGenerator</Generator>

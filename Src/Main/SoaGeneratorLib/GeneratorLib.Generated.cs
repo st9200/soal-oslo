@@ -10,7 +10,7 @@ namespace SoaMetaModel
     // Inheritace from 'Generator<List<object>, GeneratorContext>' and constructor is only generated into the main file.
     public partial class GeneratorLib
     {
-            #region functions from "C:\Users\Balazs\Documents\Visual Studio 2013\Projects\SoaMM\SoaGeneratorLib\GeneratorLib.mcg"
+            #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\GeneratorLib.mcg"
             public string Generated_FirstLetterLow(string s)
             {
                 return s.Substring(0, 1).ToLower() + s.Substring(1);
