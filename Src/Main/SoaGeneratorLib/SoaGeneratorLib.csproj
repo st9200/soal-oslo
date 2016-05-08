@@ -125,6 +125,26 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>VSGeneratorEx.mcg</DependentUpon>
     </Compile>
+    <Compile Include="VSRestGenerator.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VSRestGenerator.mcg</DependentUpon>
+    </Compile>
+    <Compile Include="VSRestGeneratorLib.Generated.cs">
+      <DependentUpon>VSRestGeneratorLib.mcg</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="VSSoapGenerator.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VSSoapGenerator.mcg</DependentUpon>
+    </Compile>
+    <Compile Include="VSSoapGeneratorLib.Generated.cs">
+      <DependentUpon>VSSoapGeneratorLib.mcg</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="VSGeneratorLib.Generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -247,6 +267,26 @@
       <Generator>MCodeGenerator</Generator>
       <LastGenOutput>TomcatCxfGenerator.Generated.cs</LastGenOutput>
     </None>
+    <None Include="VSRestGeneratorLib.mcg">
+      <Generator>MCodeGenerator</Generator>
+      <LastGenOutput>VSRestGeneratorLib.Generated.cs</LastGenOutput>
+    </None>
+    <None Include="VSSoapGeneratorLib.mcg">
+      <Generator>MCodeGenerator</Generator>
+      <LastGenOutput>VSSoapGeneratorLib.Generated.cs</LastGenOutput>
+    </None>
+    <None Include="VSGeneratorLib.mcg">
+      <Generator>MCodeGenerator</Generator>
+      <LastGenOutput>VSGeneratorLib.Generated.cs</LastGenOutput>
+    </None>
+    <None Include="VSSoapGenerator.mcg">
+      <Generator>MCodeGenerator</Generator>
+      <LastGenOutput>VSSoapGenerator.Generated.cs</LastGenOutput>
+    </None>
+    <None Include="VSRestGenerator.mcg">
+      <Generator>MCodeGenerator</Generator>
+      <LastGenOutput>VSRestGenerator.Generated.cs</LastGenOutput>
+    </None>
     <None Include="VSGenerator.mcg">
       <Generator>MCodeGenerator</Generator>
       <LastGenOutput>VSGenerator.Generated.cs</LastGenOutput>
@@ -254,10 +294,6 @@
     <None Include="VSGeneratorEx.mcg">
       <Generator>MCodeGenerator</Generator>
       <LastGenOutput>VSGeneratorEx.Generated.cs</LastGenOutput>
-    </None>
-    <None Include="VSGeneratorLib.mcg">
-      <Generator>MCodeGenerator</Generator>
-      <LastGenOutput>VSGeneratorLib.Generated.cs</LastGenOutput>
     </None>
     <None Include="XsdWsdlGenerator.mcg">
       <Generator>MCodeGenerator</Generator>

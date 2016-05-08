@@ -237,15 +237,25 @@ namespace SoaMM
                 oracleGenerator.Execute();
             }
             if (options.GenerateVS)
-            {
-                VSGenerator vsGenerator = new VSGenerator(visible, new GeneratorContext());
-                vsGenerator.Properties.OutputDir = options.OutputDir;
-                vsGenerator.Properties.ProjectName = options.VSProject;
-                vsGenerator.Properties.NoImplementationDelegates = options.GenerateNoImplementationDelegates;
-                vsGenerator.Properties.ThrowNotImplementedException = !options.GenerateNoUnimplementedException;
-                vsGenerator.Properties.GenerateImplementationBase = options.GenerateImplementationBase;
-                vsGenerator.Properties.GenerateRestfulWebService = options.GenerateRestfulWebService;
-                vsGenerator.Execute();
+            {                               
+                if (options.GenerateRestfulWebService)
+                {
+                    VSRestGenerator vsRestGenerator = new VSRestGenerator(visible, new GeneratorContext());
+                    vsRestGenerator.Properties.ThrowNotImplementedException = !options.GenerateNoUnimplementedException;
+                    vsRestGenerator.Properties.OutputDir = options.OutputDir;
+                    vsRestGenerator.Properties.ProjectName = options.VSProject;
+                    vsRestGenerator.Execute();
+                }
+                else
+                {
+                    VSSoapGenerator vsSoapGenerator = new VSSoapGenerator(visible, new GeneratorContext());
+                    vsSoapGenerator.Properties.NoImplementationDelegates = options.GenerateNoImplementationDelegates;
+                    vsSoapGenerator.Properties.ThrowNotImplementedException = !options.GenerateNoUnimplementedException;
+                    vsSoapGenerator.Properties.GenerateImplementationBase = options.GenerateImplementationBase;
+                    vsSoapGenerator.Properties.OutputDir = options.OutputDir;
+                    vsSoapGenerator.Properties.ProjectName = options.VSProject;
+                    vsSoapGenerator.Execute();
+                }
             }
         }
 
