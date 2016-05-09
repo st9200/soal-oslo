@@ -767,6 +767,207 @@ namespace SoaMetaModel
                 return __result;
             }
             
+            public List<string> Generated_GenerateClientPart(Endpoint endp)
+            {
+                List<string> __result = new List<string>();
+                using(TemplatePrinter __printer = new TemplatePrinter(__result))
+                {
+                    __printer.WriteTemplateOutput("    public partial class ");
+                    __printer.Write(endp.Name);
+                    __printer.WriteTemplateOutput("Client : System.ServiceModel.ClientBase<");
+                    __printer.Write(endp.Namespace.FullName);
+                    __printer.WriteTemplateOutput(".");
+                    __printer.Write(endp.Interface.Name);
+                    __printer.WriteTemplateOutput(">, ");
+                    __printer.Write(endp.Namespace.FullName);
+                    __printer.WriteTemplateOutput(".");
+                    __printer.Write(endp.Interface.Name);
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("    {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        public ");
+                    __printer.Write(endp.Name);
+                    __printer.WriteTemplateOutput("Client()");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        }");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        public ");
+                    __printer.Write(endp.Name);
+                    __printer.WriteTemplateOutput("Client(string endpointConfigurationName) : ");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("                base(endpointConfigurationName)");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        }");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        public ");
+                    __printer.Write(endp.Name);
+                    __printer.WriteTemplateOutput("Client(string endpointConfigurationName, string remoteAddress) : ");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("                base(endpointConfigurationName, remoteAddress)");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        }");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        public ");
+                    __printer.Write(endp.Name);
+                    __printer.WriteTemplateOutput("Client(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : ");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("                base(endpointConfigurationName, remoteAddress)");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        }");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        public ");
+                    __printer.Write(endp.Name);
+                    __printer.WriteTemplateOutput("Client(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : ");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("                base(binding, remoteAddress)");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        }");
+                    __printer.WriteLine();
+                    int __loop12_iteration = 0;
+                    var __loop12_result =
+                        (from __loop12_tmp_item___noname10 in EnumerableExtensions.Enumerate((endp.Interface.Operations).GetEnumerator())
+                        from __loop12_tmp_item_op in EnumerableExtensions.Enumerate((__loop12_tmp_item___noname10).GetEnumerator()).OfType<Operation>()
+                        select
+                            new
+                            {
+                                __loop12_item___noname10 = __loop12_tmp_item___noname10,
+                                __loop12_item_op = __loop12_tmp_item_op,
+                            }).ToArray();
+                    foreach (var __loop12_item in __loop12_result)
+                    {
+                        var __noname10 = __loop12_item.__loop12_item___noname10;
+                        var op = __loop12_item.__loop12_item_op;
+                        ++__loop12_iteration;
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        public ");
+                        __printer.Write(Generated_GenerateOperationHead(op));
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        {");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        ");
+                        if (op.ReturnType != PseudoType.Void && op.ReturnType != PseudoType.Async)
+                        {
+                            __printer.TrimLine();
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("            return base.Channel.");
+                            __printer.Write(Generated_GenerateOperationCall(op));
+                            __printer.WriteTemplateOutput(";");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("        ");
+                        }
+                        else
+                        {
+                            __printer.TrimLine();
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("            base.Channel.");
+                            __printer.Write(Generated_GenerateOperationCall(op));
+                            __printer.WriteTemplateOutput(";");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("        ");
+                        }
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        }");
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("    }");
+                    __printer.WriteLine();
+                }
+                return __result;
+            }
+            
+            public List<string> Generated_GenerateClient(Endpoint endp)
+            {
+                List<string> __result = new List<string>();
+                using(TemplatePrinter __printer = new TemplatePrinter(__result))
+                {
+                    __printer.WriteTemplateOutput("using System;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("using System.Collections.Generic;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("using System.Linq;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("using System.Runtime.Serialization;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("using System.ServiceModel;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("using System.Text;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("namespace ");
+                    __printer.Write(endp.Namespace.FullName);
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("{");
+                    __printer.WriteLine();
+                    __printer.Write(Generated_GenerateClientPart(endp));
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("}");
+                    __printer.WriteLine();
+                }
+                return __result;
+            }
+            
+            public List<string> Generated_GenerateClientPart(Namespace ns)
+            {
+                List<string> __result = new List<string>();
+                using(TemplatePrinter __printer = new TemplatePrinter(__result))
+                {
+                    int __loop13_iteration = 0;
+                    var __loop13_result =
+                        (from __loop13_tmp_item___noname11 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
+                        from __loop13_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop13_tmp_item___noname11.Declarations).GetEnumerator())
+                        from __loop13_tmp_item_endp in EnumerableExtensions.Enumerate((__loop13_tmp_item_Declarations).GetEnumerator()).OfType<Endpoint>()
+                        select
+                            new
+                            {
+                                __loop13_item___noname11 = __loop13_tmp_item___noname11,
+                                __loop13_item_Declarations = __loop13_tmp_item_Declarations,
+                                __loop13_item_endp = __loop13_tmp_item_endp,
+                            }).ToArray();
+                    foreach (var __loop13_item in __loop13_result)
+                    {
+                        var __noname11 = __loop13_item.__loop13_item___noname11;
+                        var Declarations = __loop13_item.__loop13_item_Declarations;
+                        var endp = __loop13_item.__loop13_item_endp;
+                        ++__loop13_iteration;
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    ");
+                        __printer.Write(Generated_GenerateClientPart(endp));
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                }
+                return __result;
+            }
+            
             public List<string> Generated_GenerateOperationCall(Operation op)
             {
                 List<string> __result = new List<string>();
@@ -775,20 +976,20 @@ namespace SoaMetaModel
                     __printer.Write(op.Name);
                     __printer.WriteTemplateOutput("(\\");
                     __printer.WriteLine();
-                    int __loop12_iteration = 0;
+                    int __loop14_iteration = 0;
                     string comma = "";
-                    var __loop12_result =
-                        (from __loop12_tmp_item_pa in EnumerableExtensions.Enumerate((op.Parameters).GetEnumerator())
+                    var __loop14_result =
+                        (from __loop14_tmp_item_pa in EnumerableExtensions.Enumerate((op.Parameters).GetEnumerator())
                         select
                             new
                             {
-                                __loop12_item_pa = __loop12_tmp_item_pa,
+                                __loop14_item_pa = __loop14_tmp_item_pa,
                             }).ToArray();
-                    foreach (var __loop12_item in __loop12_result)
+                    foreach (var __loop14_item in __loop14_result)
                     {
-                        var pa = __loop12_item.__loop12_item_pa;
-                        ++__loop12_iteration;
-                        if (__loop12_iteration >= 2)
+                        var pa = __loop14_item.__loop14_item_pa;
+                        ++__loop14_iteration;
+                        if (__loop14_iteration >= 2)
                         {
                             comma = ", ";
                         }
@@ -817,20 +1018,20 @@ namespace SoaMetaModel
                     __printer.Write(op.Name);
                     __printer.WriteTemplateOutput("(\\");
                     __printer.WriteLine();
-                    int __loop13_iteration = 0;
+                    int __loop15_iteration = 0;
                     string comma = "";
-                    var __loop13_result =
-                        (from __loop13_tmp_item_pa in EnumerableExtensions.Enumerate((op.Parameters).GetEnumerator())
+                    var __loop15_result =
+                        (from __loop15_tmp_item_pa in EnumerableExtensions.Enumerate((op.Parameters).GetEnumerator())
                         select
                             new
                             {
-                                __loop13_item_pa = __loop13_tmp_item_pa,
+                                __loop15_item_pa = __loop15_tmp_item_pa,
                             }).ToArray();
-                    foreach (var __loop13_item in __loop13_result)
+                    foreach (var __loop15_item in __loop15_result)
                     {
-                        var pa = __loop13_item.__loop13_item_pa;
-                        ++__loop13_iteration;
-                        if (__loop13_iteration >= 2)
+                        var pa = __loop15_item.__loop15_item_pa;
+                        ++__loop15_iteration;
+                        if (__loop15_iteration >= 2)
                         {
                             comma = ", ";
                         }
@@ -846,6 +1047,17 @@ namespace SoaMetaModel
                     __printer.TrimLine();
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput(")");
+                    __printer.WriteLine();
+                }
+                return __result;
+            }
+            
+            public List<string> Generated_GenerateInstallCertificates()
+            {
+                List<string> __result = new List<string>();
+                using(TemplatePrinter __printer = new TemplatePrinter(__result))
+                {
+                    __printer.WriteTemplateOutput("^");
                     __printer.WriteLine();
                 }
                 return __result;

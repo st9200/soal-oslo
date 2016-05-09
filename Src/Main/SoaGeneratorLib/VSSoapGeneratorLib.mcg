@@ -8,12 +8,6 @@ configuration
 	string ClassName = "VSSoapGenerator";
 end configuration
 
-/*
-* Generate service for interface in Services folder
-*/
-template GenerateService(Endpoint endp)
-<%@ ServiceHost Language="C#" Debug="true" Service="[endp.Namespace.FullName].[endp.Name]" CodeBehind="~/App_Code/[endp.Name].cs" %>
-end template
 
 /*
 * Generate web.config file in Services folder
@@ -281,41 +275,4 @@ template GenerateClientEndpoints()
 </client>
 end template
 
-template GenerateServicesDefaultAspx()
-<%@ Page Title="Services Home Page" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true"
-    CodeFile="~/Services/Default.aspx.cs" Inherits="Services._Default" %>
-
-<asp:Content ID="HeaderContent" runat="server" ContentPlaceHolderID="HeadContent">
-</asp:Content>
-<asp:Content ID="BodyContent" runat="server" ContentPlaceHolderID="MainContent">
-    <h2>
-        Services
-    </h2>
-    <p>
-[loop(Instances->endpoint:typeof(Endpoint); int id = 1; id = id+1)]
-    <asp:HyperLink ID="HyperLink[id]" runat="server" NavigateUrl="~/Services/[endpoint.Name].svc">[endpoint.Name]</asp:HyperLink><br/>
-[end loop]
-    </p>
-</asp:Content>
-end template
-
-template GenerateServicesDefaultAspxCs()
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-
-namespace Services
-{
-	public partial class _Default : System.Web.UI.Page
-	{
-		protected void Page_Load(object sender, EventArgs e)
-		{
-
-		}
-	}
-}
-end template
 

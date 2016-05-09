@@ -13,11 +13,6 @@ configuration
         string ProjectName = "VisualStudioProject";
         string ResourcesDir = "../Resources";
         string OutputDir = "../../Output";
-        //bool NoImplementationDelegates = true; //
-        //bool ThrowNotImplementedException = true; //
-        //bool NoWindowsIdentityFoundation = true; //
-        //bool GenerateImplementationBase = false; //
-		//bool GenerateRestfulWebService = false; //
     end properties
 end configuration
 
@@ -187,6 +182,76 @@ end template
 
 
 /*
+* Generate Proxy for endpoint
+*/
+template GenerateClientPart(Endpoint endp)
+    public partial class [endp.Name]Client : System.ServiceModel.ClientBase<[endp.Namespace.FullName].[endp.Interface.Name]>, [endp.Namespace.FullName].[endp.Interface.Name]
+    {
+        public [endp.Name]Client()
+        {
+        }
+^
+        public [endp.Name]Client(string endpointConfigurationName) : 
+                base(endpointConfigurationName)
+        {
+        }
+^
+        public [endp.Name]Client(string endpointConfigurationName, string remoteAddress) : 
+                base(endpointConfigurationName, remoteAddress)
+        {
+        }
+^
+        public [endp.Name]Client(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
+                base(endpointConfigurationName, remoteAddress)
+        {
+        }
+^
+        public [endp.Name]Client(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
+                base(binding, remoteAddress)
+        {
+        }
+[loop(endp.Interface.Operations->op:typeof(Operation))]
+^
+        public [GenerateOperationHead(op)]
+        {
+        [if(op.ReturnType != PseudoType.Void && op.ReturnType != PseudoType.Async)]
+            return base.Channel.[GenerateOperationCall(op)];
+        [else]
+            base.Channel.[GenerateOperationCall(op)];
+        [end if]
+        }
+[end loop]
+    }
+end template
+
+
+/*
+* Generate Proxy for endpoint
+*/
+template GenerateClient(Endpoint endp)
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.Text;
+^
+namespace [endp.Namespace.FullName]
+{
+[GenerateClientPart(endp)]
+}
+end template
+
+
+template GenerateClientPart(Namespace ns)
+[loop(ns->Declarations->endp:typeof(Endpoint))]
+^
+    [GenerateClientPart(endp)]
+[end loop]
+end template
+
+
+/*
 * Print call operation code
 */
 template GenerateOperationCall(Operation op)
@@ -209,3 +274,7 @@ template GenerateOperationHead(Operation op)
 )
 end template
 
+
+template GenerateInstallCertificates()
+^
+end template

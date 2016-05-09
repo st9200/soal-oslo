@@ -91,7 +91,7 @@ function void Main()
             Context.Output(GenerateInterfaceImpl(endp));
         end if
         Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/App_Code/" + endp.Name + "Client.cs");
-        Context.Output(GenerateClient(endp));
+        Context.Output(VSGenerator.GenerateClient(endp));
     end loop
 
     if (!Properties.NoImplementationDelegates)
@@ -120,7 +120,7 @@ function void Main()
     Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Services");
     loop(Instances->endp:typeof(Endpoint))
         Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Services/" + endp.Name + ".svc");
-        Context.Output(GenerateService(endp));
+        Context.Output(VSGenerator.GenerateService(endp));
     end loop
     // Web config file
     Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Services/Web.config");
@@ -131,9 +131,9 @@ function void Main()
     Context.Output(GenerateClientAppConfig());
     // Service list page
     Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Services/Default.aspx");
-    Context.Output(GenerateServicesDefaultAspx());
+    Context.Output(VSGenerator.GenerateServicesDefaultAspx());
     Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Services/Default.aspx.cs");
-    Context.Output(GenerateServicesDefaultAspxCs());
+    Context.Output(VSGenerator.GenerateServicesDefaultAspxCs());
 
 
     // css file
@@ -144,16 +144,16 @@ function void Main()
     Context.SetOutputFolder(Properties.OutputDir);
     Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client");
 	Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + ".sln");
-	Context.Output(GenerateSolution());
+	Context.Output(VSGenerator.GenerateSolution());
 	Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client/" + Properties.ProjectName + "Client.csproj");
-	Context.Output(GenerateClientProject());
+	Context.Output(VSGenerator.GenerateClientProject());
 	Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client/Program.cs");
 	Context.Output(GenerateProgramCs());
 	Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client/App.config");
 	Context.Output(GenerateClientAppConfig());
     Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client/Properties");
 	Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client/Properties/AssemblyInfo.cs");
-	Context.Output(GenerateAssemblyInfo());
+	Context.Output(VSGenerator.GenerateAssemblyInfo());
     loop(Instances->ns:typeof(Namespace))
         // Only create files if not only containing namespaces
         if(ns.HasDeclarations())
@@ -163,7 +163,7 @@ function void Main()
     end loop
 
 	Context.SetOutput("VisualStudio/" + Properties.ProjectName + "_windows_script.bat");
-	Context.Output(GenerateInstallCertificates());
+	Context.Output(VSGenerator.GenerateInstallCertificates());
 end function
 
 
@@ -179,7 +179,7 @@ namespace [ns.FullName]
 {
 [VSGenerator.GenerateDataTypesPart(ns)]
 [GenerateInterfacePart(ns)]
-[GenerateClientPart(ns)]
+[VSGenerator.GenerateClientPart(ns)]
 }
 end template
 
@@ -458,211 +458,6 @@ namespace [endp.Namespace.FullName]
 end template
 
 
-/*
-* Generate Proxy for endpoint
-*/
-template GenerateClient(Endpoint endp)
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.Text;
-^
-namespace [endp.Namespace.FullName]
-{
-[GenerateClientPart(endp)]
-}
-end template
-
-
-template GenerateClientPart(Namespace ns)
-[loop(ns->Declarations->endp:typeof(Endpoint))]
-^
-    [GenerateClientPart(endp)]
-[end loop]
-end template
-
-
-/*
-* Generate Proxy for endpoint
-*/
-template GenerateClientPart(Endpoint endp)
-    public partial class [endp.Name]Client : System.ServiceModel.ClientBase<[endp.Namespace.FullName].[endp.Interface.Name]>, [endp.Namespace.FullName].[endp.Interface.Name]
-    {
-        public [endp.Name]Client()
-        {
-        }
-^
-        public [endp.Name]Client(string endpointConfigurationName) : 
-                base(endpointConfigurationName)
-        {
-        }
-^
-        public [endp.Name]Client(string endpointConfigurationName, string remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress)
-        {
-        }
-^
-        public [endp.Name]Client(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
-                base(endpointConfigurationName, remoteAddress)
-        {
-        }
-^
-        public [endp.Name]Client(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
-                base(binding, remoteAddress)
-        {
-        }
-[loop(endp.Interface.Operations->op:typeof(Operation))]
-^
-        public [VSGenerator.GenerateOperationHead(op)]
-        {
-        [if(op.ReturnType != PseudoType.Void && op.ReturnType != PseudoType.Async)]
-            return base.Channel.[VSGenerator.GenerateOperationCall(op)];
-        [else]
-            base.Channel.[VSGenerator.GenerateOperationCall(op)];
-        [end if]
-        }
-[end loop]
-    }
-end template
-
-
-
-template GenerateSolution()
-
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "[Properties.ProjectName]Client", "[Properties.ProjectName]Client\[Properties.ProjectName]Client.csproj", "{25817C9A-811D-4D02-B475-927904A404FD}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x86 = Debug|x86
-		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{25817C9A-811D-4D02-B475-927904A404FD}.Debug|x86.ActiveCfg = Debug|x86
-		{25817C9A-811D-4D02-B475-927904A404FD}.Debug|x86.Build.0 = Debug|x86
-		{25817C9A-811D-4D02-B475-927904A404FD}.Release|x86.ActiveCfg = Release|x86
-		{25817C9A-811D-4D02-B475-927904A404FD}.Release|x86.Build.0 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-EndGlobal
-end template
-
-template GenerateClientProject()
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{25817C9A-811D-4D02-B475-927904A404FD}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>[Properties.ProjectName]Client</RootNamespace>
-    <AssemblyName>[Properties.ProjectName]Client</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-[loop(Instances->ns:typeof(Namespace))]
-[if (ns.HasDeclarations())]
-    <Compile Include="[ns.FullName].cs" />
-[end if]
-[end loop]
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-</Project>
-end template
-
-template GenerateAssemblyInfo()
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-["["]assembly: AssemblyTitle("[Properties.ProjectName]Client")["]"]
-["["]assembly: AssemblyDescription("")["]"]
-["["]assembly: AssemblyConfiguration("")["]"]
-["["]assembly: AssemblyCompany("")["]"]
-["["]assembly: AssemblyProduct("[Properties.ProjectName]Client")["]"]
-["["]assembly: AssemblyCopyright("Copyright ©  2014")["]"]
-["["]assembly: AssemblyTrademark("")["]"]
-["["]assembly: AssemblyCulture("")["]"]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-["["]assembly: ComVisible(false)["]"]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-["["]assembly: Guid("ef038eee-e47d-4905-84cc-5e147df1ffec")["]"]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// ["["]assembly: AssemblyVersion("1.0.*")["]"]
-["["]assembly: AssemblyVersion("1.0.0.0")["]"]
-["["]assembly: AssemblyFileVersion("1.0.0.0")["]"]
-end template
-
 template GenerateProgramCs()
 using System;
 using System.Collections.Generic;
@@ -759,6 +554,3 @@ namespace [Properties.ProjectName]Client
 }
 end template
 
-template GenerateInstallCertificates()
-^
-end template

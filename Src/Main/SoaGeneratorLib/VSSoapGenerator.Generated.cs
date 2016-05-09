@@ -162,7 +162,7 @@ namespace SoaMetaModel
                         Context.Output(Generated_GenerateInterfaceImpl(endp));
                     }
                     Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/App_Code/" + endp.Name + "Client.cs");
-                    Context.Output(Generated_GenerateClient(endp));
+                    Context.Output(VSGenerator.Generated_GenerateClient(endp));
                 }
                 if (!Properties.NoImplementationDelegates)
                 {
@@ -225,7 +225,7 @@ namespace SoaMetaModel
                     var endp = __loop7_item.__loop7_item_endp;
                     ++__loop7_iteration;
                     Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Services/" + endp.Name + ".svc");
-                    Context.Output(Generated_GenerateService(endp));
+                    Context.Output(VSGenerator.Generated_GenerateService(endp));
                 }
                 Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Services/Web.config");
                 Context.Output(Generated_GenerateWebConfig());
@@ -233,24 +233,24 @@ namespace SoaMetaModel
                 Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Clients/App.config");
                 Context.Output(Generated_GenerateClientAppConfig());
                 Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Services/Default.aspx");
-                Context.Output(Generated_GenerateServicesDefaultAspx());
+                Context.Output(VSGenerator.Generated_GenerateServicesDefaultAspx());
                 Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Services/Default.aspx.cs");
-                Context.Output(Generated_GenerateServicesDefaultAspxCs());
+                Context.Output(VSGenerator.Generated_GenerateServicesDefaultAspxCs());
                 Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Styles");
                 File.Copy(Properties.ResourcesDir + "/VisualStudio/Site.css", "VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Styles/Site.css", true);
                 Context.SetOutputFolder(Properties.OutputDir);
                 Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client");
                 Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + ".sln");
-                Context.Output(Generated_GenerateSolution());
+                Context.Output(VSGenerator.Generated_GenerateSolution());
                 Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client/" + Properties.ProjectName + "Client.csproj");
-                Context.Output(Generated_GenerateClientProject());
+                Context.Output(VSGenerator.Generated_GenerateClientProject());
                 Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client/Program.cs");
                 Context.Output(Generated_GenerateProgramCs());
                 Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client/App.config");
                 Context.Output(Generated_GenerateClientAppConfig());
                 Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client/Properties");
                 Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "Client/Properties/AssemblyInfo.cs");
-                Context.Output(Generated_GenerateAssemblyInfo());
+                Context.Output(VSGenerator.Generated_GenerateAssemblyInfo());
                 int __loop8_iteration = 0;
                 var __loop8_result =
                     (from __loop8_tmp_item___noname8 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
@@ -273,7 +273,7 @@ namespace SoaMetaModel
                     }
                 }
                 Context.SetOutput("VisualStudio/" + Properties.ProjectName + "_windows_script.bat");
-                Context.Output(Generated_GenerateInstallCertificates());
+                Context.Output(VSGenerator.Generated_GenerateInstallCertificates());
             }
             
             public List<string> Generated_GenerateFullNamespace(Namespace ns)
@@ -304,7 +304,7 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.Write(Generated_GenerateInterfacePart(ns));
                     __printer.WriteLine();
-                    __printer.Write(Generated_GenerateClientPart(ns));
+                    __printer.Write(VSGenerator.Generated_GenerateClientPart(ns));
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("}");
                     __printer.WriteLine();
@@ -1266,536 +1266,6 @@ namespace SoaMetaModel
                 return __result;
             }
             
-            public List<string> Generated_GenerateClient(Endpoint endp)
-            {
-                List<string> __result = new List<string>();
-                using(TemplatePrinter __printer = new TemplatePrinter(__result))
-                {
-                    __printer.WriteTemplateOutput("using System;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Collections.Generic;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Linq;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Runtime.Serialization;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.ServiceModel;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Text;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("^");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("namespace ");
-                    __printer.Write(endp.Namespace.FullName);
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("{");
-                    __printer.WriteLine();
-                    __printer.Write(Generated_GenerateClientPart(endp));
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("}");
-                    __printer.WriteLine();
-                }
-                return __result;
-            }
-            
-            public List<string> Generated_GenerateClientPart(Namespace ns)
-            {
-                List<string> __result = new List<string>();
-                using(TemplatePrinter __printer = new TemplatePrinter(__result))
-                {
-                    int __loop21_iteration = 0;
-                    var __loop21_result =
-                        (from __loop21_tmp_item___noname21 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
-                        from __loop21_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop21_tmp_item___noname21.Declarations).GetEnumerator())
-                        from __loop21_tmp_item_endp in EnumerableExtensions.Enumerate((__loop21_tmp_item_Declarations).GetEnumerator()).OfType<Endpoint>()
-                        select
-                            new
-                            {
-                                __loop21_item___noname21 = __loop21_tmp_item___noname21,
-                                __loop21_item_Declarations = __loop21_tmp_item_Declarations,
-                                __loop21_item_endp = __loop21_tmp_item_endp,
-                            }).ToArray();
-                    foreach (var __loop21_item in __loop21_result)
-                    {
-                        var __noname21 = __loop21_item.__loop21_item___noname21;
-                        var Declarations = __loop21_item.__loop21_item_Declarations;
-                        var endp = __loop21_item.__loop21_item_endp;
-                        ++__loop21_iteration;
-                        __printer.TrimLine();
-                        __printer.WriteLine();
-                        __printer.WriteTemplateOutput("^");
-                        __printer.WriteLine();
-                        __printer.WriteTemplateOutput("    ");
-                        __printer.Write(Generated_GenerateClientPart(endp));
-                        __printer.WriteLine();
-                    }
-                    __printer.TrimLine();
-                    __printer.WriteLine();
-                }
-                return __result;
-            }
-            
-            public List<string> Generated_GenerateClientPart(Endpoint endp)
-            {
-                List<string> __result = new List<string>();
-                using(TemplatePrinter __printer = new TemplatePrinter(__result))
-                {
-                    __printer.WriteTemplateOutput("    public partial class ");
-                    __printer.Write(endp.Name);
-                    __printer.WriteTemplateOutput("Client : System.ServiceModel.ClientBase<");
-                    __printer.Write(endp.Namespace.FullName);
-                    __printer.WriteTemplateOutput(".");
-                    __printer.Write(endp.Interface.Name);
-                    __printer.WriteTemplateOutput(">, ");
-                    __printer.Write(endp.Namespace.FullName);
-                    __printer.WriteTemplateOutput(".");
-                    __printer.Write(endp.Interface.Name);
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    {");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        public ");
-                    __printer.Write(endp.Name);
-                    __printer.WriteTemplateOutput("Client()");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        {");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        }");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("^");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        public ");
-                    __printer.Write(endp.Name);
-                    __printer.WriteTemplateOutput("Client(string endpointConfigurationName) : ");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("                base(endpointConfigurationName)");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        {");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        }");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("^");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        public ");
-                    __printer.Write(endp.Name);
-                    __printer.WriteTemplateOutput("Client(string endpointConfigurationName, string remoteAddress) : ");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("                base(endpointConfigurationName, remoteAddress)");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        {");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        }");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("^");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        public ");
-                    __printer.Write(endp.Name);
-                    __printer.WriteTemplateOutput("Client(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : ");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("                base(endpointConfigurationName, remoteAddress)");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        {");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        }");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("^");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        public ");
-                    __printer.Write(endp.Name);
-                    __printer.WriteTemplateOutput("Client(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : ");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("                base(binding, remoteAddress)");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        {");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        }");
-                    __printer.WriteLine();
-                    int __loop22_iteration = 0;
-                    var __loop22_result =
-                        (from __loop22_tmp_item___noname22 in EnumerableExtensions.Enumerate((endp.Interface.Operations).GetEnumerator())
-                        from __loop22_tmp_item_op in EnumerableExtensions.Enumerate((__loop22_tmp_item___noname22).GetEnumerator()).OfType<Operation>()
-                        select
-                            new
-                            {
-                                __loop22_item___noname22 = __loop22_tmp_item___noname22,
-                                __loop22_item_op = __loop22_tmp_item_op,
-                            }).ToArray();
-                    foreach (var __loop22_item in __loop22_result)
-                    {
-                        var __noname22 = __loop22_item.__loop22_item___noname22;
-                        var op = __loop22_item.__loop22_item_op;
-                        ++__loop22_iteration;
-                        __printer.TrimLine();
-                        __printer.WriteLine();
-                        __printer.WriteTemplateOutput("^");
-                        __printer.WriteLine();
-                        __printer.WriteTemplateOutput("        public ");
-                        __printer.Write(VSGenerator.Generated_GenerateOperationHead(op));
-                        __printer.WriteLine();
-                        __printer.WriteTemplateOutput("        {");
-                        __printer.WriteLine();
-                        __printer.WriteTemplateOutput("        ");
-                        if (op.ReturnType != PseudoType.Void && op.ReturnType != PseudoType.Async)
-                        {
-                            __printer.TrimLine();
-                            __printer.WriteLine();
-                            __printer.WriteTemplateOutput("            return base.Channel.");
-                            __printer.Write(VSGenerator.Generated_GenerateOperationCall(op));
-                            __printer.WriteTemplateOutput(";");
-                            __printer.WriteLine();
-                            __printer.WriteTemplateOutput("        ");
-                        }
-                        else
-                        {
-                            __printer.TrimLine();
-                            __printer.WriteLine();
-                            __printer.WriteTemplateOutput("            base.Channel.");
-                            __printer.Write(VSGenerator.Generated_GenerateOperationCall(op));
-                            __printer.WriteTemplateOutput(";");
-                            __printer.WriteLine();
-                            __printer.WriteTemplateOutput("        ");
-                        }
-                        __printer.TrimLine();
-                        __printer.WriteLine();
-                        __printer.WriteTemplateOutput("        }");
-                        __printer.WriteLine();
-                    }
-                    __printer.TrimLine();
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    }");
-                    __printer.WriteLine();
-                }
-                return __result;
-            }
-            
-            public List<string> Generated_GenerateSolution()
-            {
-                List<string> __result = new List<string>();
-                using(TemplatePrinter __printer = new TemplatePrinter(__result))
-                {
-                    __printer.WriteTemplateOutput("Microsoft Visual Studio Solution File, Format Version 11.00");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("# Visual Studio 2010");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("Project(\"{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}\") = \"");
-                    __printer.Write(Properties.ProjectName);
-                    __printer.WriteTemplateOutput("Client\", \"");
-                    __printer.Write(Properties.ProjectName);
-                    __printer.WriteTemplateOutput("Client\\");
-                    __printer.Write(Properties.ProjectName);
-                    __printer.WriteTemplateOutput("Client.csproj\", \"{25817C9A-811D-4D02-B475-927904A404FD}\"");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("EndProject");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("Global");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("	GlobalSection(SolutionConfigurationPlatforms) = preSolution");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("		Debug|x86 = Debug|x86");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("		Release|x86 = Release|x86");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("	EndGlobalSection");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("	GlobalSection(ProjectConfigurationPlatforms) = postSolution");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("		{25817C9A-811D-4D02-B475-927904A404FD}.Debug|x86.ActiveCfg = Debug|x86");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("		{25817C9A-811D-4D02-B475-927904A404FD}.Debug|x86.Build.0 = Debug|x86");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("		{25817C9A-811D-4D02-B475-927904A404FD}.Release|x86.ActiveCfg = Release|x86");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("		{25817C9A-811D-4D02-B475-927904A404FD}.Release|x86.Build.0 = Release|x86");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("	EndGlobalSection");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("	GlobalSection(SolutionProperties) = preSolution");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("		HideSolutionNode = FALSE");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("	EndGlobalSection");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("EndGlobal");
-                    __printer.WriteLine();
-                }
-                return __result;
-            }
-            
-            public List<string> Generated_GenerateClientProject()
-            {
-                List<string> __result = new List<string>();
-                using(TemplatePrinter __printer = new TemplatePrinter(__result))
-                {
-                    __printer.WriteTemplateOutput("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("<Project ToolsVersion=\"4.0\" DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  <PropertyGroup>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Configuration Condition=\" '$(Configuration)' == '' \">Debug</Configuration>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Platform Condition=\" '$(Platform)' == '' \">x86</Platform>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <ProductVersion>8.0.30703</ProductVersion>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <SchemaVersion>2.0</SchemaVersion>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <ProjectGuid>{25817C9A-811D-4D02-B475-927904A404FD}</ProjectGuid>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <OutputType>Exe</OutputType>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <AppDesignerFolder>Properties</AppDesignerFolder>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <RootNamespace>");
-                    __printer.Write(Properties.ProjectName);
-                    __printer.WriteTemplateOutput("Client</RootNamespace>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <AssemblyName>");
-                    __printer.Write(Properties.ProjectName);
-                    __printer.WriteTemplateOutput("Client</AssemblyName>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <TargetFrameworkProfile>Client</TargetFrameworkProfile>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <FileAlignment>512</FileAlignment>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  </PropertyGroup>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  <PropertyGroup Condition=\" '$(Configuration)|$(Platform)' == 'Debug|x86' \">");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <PlatformTarget>x86</PlatformTarget>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <DebugSymbols>true</DebugSymbols>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <DebugType>full</DebugType>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Optimize>false</Optimize>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <OutputPath>bin\\Debug\\</OutputPath>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <DefineConstants>DEBUG;TRACE</DefineConstants>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <ErrorReport>prompt</ErrorReport>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <WarningLevel>4</WarningLevel>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  </PropertyGroup>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  <PropertyGroup Condition=\" '$(Configuration)|$(Platform)' == 'Release|x86' \">");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <PlatformTarget>x86</PlatformTarget>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <DebugType>pdbonly</DebugType>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Optimize>true</Optimize>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <OutputPath>bin\\Release\\</OutputPath>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <DefineConstants>TRACE</DefineConstants>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <ErrorReport>prompt</ErrorReport>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <WarningLevel>4</WarningLevel>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  </PropertyGroup>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  <ItemGroup>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Reference Include=\"System\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Reference Include=\"System.Core\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Reference Include=\"System.Runtime.Serialization\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Reference Include=\"System.ServiceModel\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Reference Include=\"System.Xml.Linq\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Reference Include=\"System.Data.DataSetExtensions\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Reference Include=\"Microsoft.CSharp\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Reference Include=\"System.Data\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Reference Include=\"System.Xml\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  </ItemGroup>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  <ItemGroup>");
-                    __printer.WriteLine();
-                    int __loop23_iteration = 0;
-                    var __loop23_result =
-                        (from __loop23_tmp_item___noname23 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                        from __loop23_tmp_item_ns in EnumerableExtensions.Enumerate((__loop23_tmp_item___noname23).GetEnumerator()).OfType<Namespace>()
-                        select
-                            new
-                            {
-                                __loop23_item___noname23 = __loop23_tmp_item___noname23,
-                                __loop23_item_ns = __loop23_tmp_item_ns,
-                            }).ToArray();
-                    foreach (var __loop23_item in __loop23_result)
-                    {
-                        var __noname23 = __loop23_item.__loop23_item___noname23;
-                        var ns = __loop23_item.__loop23_item_ns;
-                        ++__loop23_iteration;
-                        __printer.TrimLine();
-                        __printer.WriteLine();
-                        if (ns.HasDeclarations())
-                        {
-                            __printer.TrimLine();
-                            __printer.WriteLine();
-                            __printer.WriteTemplateOutput("    <Compile Include=\"");
-                            __printer.Write(ns.FullName);
-                            __printer.WriteTemplateOutput(".cs\" />");
-                            __printer.WriteLine();
-                        }
-                        __printer.TrimLine();
-                        __printer.WriteLine();
-                    }
-                    __printer.TrimLine();
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Compile Include=\"Program.cs\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <Compile Include=\"Properties\\AssemblyInfo.cs\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  </ItemGroup>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  <ItemGroup>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <None Include=\"App.config\">");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("      <SubType>Designer</SubType>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    </None>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  </ItemGroup>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  <Import Project=\"$(MSBuildToolsPath)\\Microsoft.CSharp.targets\" />");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. ");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("       Other similar extension points exist, see Microsoft.Common.targets.");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  <Target Name=\"BeforeBuild\">");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  </Target>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  <Target Name=\"AfterBuild\">");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  </Target>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("  -->");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("</Project>");
-                    __printer.WriteLine();
-                }
-                return __result;
-            }
-            
-            public List<string> Generated_GenerateAssemblyInfo()
-            {
-                List<string> __result = new List<string>();
-                using(TemplatePrinter __printer = new TemplatePrinter(__result))
-                {
-                    __printer.WriteTemplateOutput("using System.Reflection;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Runtime.CompilerServices;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Runtime.InteropServices;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// General Information about an assembly is controlled through the following ");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// set of attributes. Change these attribute values to modify the information");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// associated with an assembly.");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyTitle(\"");
-                    __printer.Write(Properties.ProjectName);
-                    __printer.WriteTemplateOutput("Client\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyDescription(\"\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyConfiguration(\"\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyCompany(\"\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyProduct(\"");
-                    __printer.Write(Properties.ProjectName);
-                    __printer.WriteTemplateOutput("Client\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyCopyright(\"Copyright ©  2014\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyTrademark(\"\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyCulture(\"\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// Setting ComVisible to false makes the types in this assembly not visible ");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// to COM components.  If you need to access a type in this assembly from ");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// COM, set the ComVisible attribute to true on that type.");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: ComVisible(false)");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// The following GUID is for the ID of the typelib if this project is exposed to COM");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: Guid(\"ef038eee-e47d-4905-84cc-5e147df1ffec\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// Version information for an assembly consists of the following four values:");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("//");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("//      Major Version");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("//      Minor Version ");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("//      Build Number");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("//      Revision");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("//");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// You can specify all the values or you can default the Build and Revision Numbers ");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// by using the '*' as shown below:");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("// ");
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyVersion(\"1.0.*\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyVersion(\"1.0.0.0\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                    __printer.Write("[");
-                    __printer.WriteTemplateOutput("assembly: AssemblyFileVersion(\"1.0.0.0\")");
-                    __printer.Write("]");
-                    __printer.WriteLine();
-                }
-                return __result;
-            }
-            
             public List<string> Generated_GenerateProgramCs()
             {
                 List<string> __result = new List<string>();
@@ -1811,21 +1281,21 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("using System.ServiceModel;");
                     __printer.WriteLine();
-                    int __loop24_iteration = 0;
-                    var __loop24_result =
-                        (from __loop24_tmp_item___noname24 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                        from __loop24_tmp_item_ns in EnumerableExtensions.Enumerate((__loop24_tmp_item___noname24).GetEnumerator()).OfType<Namespace>()
+                    int __loop21_iteration = 0;
+                    var __loop21_result =
+                        (from __loop21_tmp_item___noname21 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop21_tmp_item_ns in EnumerableExtensions.Enumerate((__loop21_tmp_item___noname21).GetEnumerator()).OfType<Namespace>()
                         select
                             new
                             {
-                                __loop24_item___noname24 = __loop24_tmp_item___noname24,
-                                __loop24_item_ns = __loop24_tmp_item_ns,
+                                __loop21_item___noname21 = __loop21_tmp_item___noname21,
+                                __loop21_item_ns = __loop21_tmp_item_ns,
                             }).ToArray();
-                    foreach (var __loop24_item in __loop24_result)
+                    foreach (var __loop21_item in __loop21_result)
                     {
-                        var __noname24 = __loop24_item.__loop24_item___noname24;
-                        var ns = __loop24_item.__loop24_item_ns;
-                        ++__loop24_iteration;
+                        var __noname21 = __loop21_item.__loop21_item___noname21;
+                        var ns = __loop21_item.__loop21_item_ns;
+                        ++__loop21_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         if (ns.HasDeclarations())
@@ -1911,21 +1381,21 @@ namespace SoaMetaModel
                     __printer.WriteTemplateOutput("                {");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("					");
-                    int __loop25_iteration = 0;
-                    var __loop25_result =
-                        (from __loop25_tmp_item___noname25 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                        from __loop25_tmp_item_endp in EnumerableExtensions.Enumerate((__loop25_tmp_item___noname25).GetEnumerator()).OfType<Endpoint>()
+                    int __loop22_iteration = 0;
+                    var __loop22_result =
+                        (from __loop22_tmp_item___noname22 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop22_tmp_item_endp in EnumerableExtensions.Enumerate((__loop22_tmp_item___noname22).GetEnumerator()).OfType<Endpoint>()
                         select
                             new
                             {
-                                __loop25_item___noname25 = __loop25_tmp_item___noname25,
-                                __loop25_item_endp = __loop25_tmp_item_endp,
+                                __loop22_item___noname22 = __loop22_tmp_item___noname22,
+                                __loop22_item_endp = __loop22_tmp_item_endp,
                             }).ToArray();
-                    foreach (var __loop25_item in __loop25_result)
+                    foreach (var __loop22_item in __loop22_result)
                     {
-                        var __noname25 = __loop25_item.__loop25_item___noname25;
-                        var endp = __loop25_item.__loop25_item_endp;
-                        ++__loop25_iteration;
+                        var __noname22 = __loop22_item.__loop22_item___noname22;
+                        var endp = __loop22_item.__loop22_item_endp;
+                        ++__loop22_iteration;
                         __printer.WriteTemplateOutput("                ");
                         __printer.TrimLine();
                         __printer.WriteLine();
@@ -1956,21 +1426,21 @@ namespace SoaMetaModel
                     __printer.WriteTemplateOutput("^");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("		");
-                    int __loop26_iteration = 0;
-                    var __loop26_result =
-                        (from __loop26_tmp_item___noname26 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                        from __loop26_tmp_item_intf in EnumerableExtensions.Enumerate((__loop26_tmp_item___noname26).GetEnumerator()).OfType<Interface>()
+                    int __loop23_iteration = 0;
+                    var __loop23_result =
+                        (from __loop23_tmp_item___noname23 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop23_tmp_item_intf in EnumerableExtensions.Enumerate((__loop23_tmp_item___noname23).GetEnumerator()).OfType<Interface>()
                         select
                             new
                             {
-                                __loop26_item___noname26 = __loop26_tmp_item___noname26,
-                                __loop26_item_intf = __loop26_tmp_item_intf,
+                                __loop23_item___noname23 = __loop23_tmp_item___noname23,
+                                __loop23_item_intf = __loop23_tmp_item_intf,
                             }).ToArray();
-                    foreach (var __loop26_item in __loop26_result)
+                    foreach (var __loop23_item in __loop23_result)
                     {
-                        var __noname26 = __loop26_item.__loop26_item___noname26;
-                        var intf = __loop26_item.__loop26_item_intf;
-                        ++__loop26_iteration;
+                        var __noname23 = __loop23_item.__loop23_item___noname23;
+                        var intf = __loop23_item.__loop23_item_intf;
+                        ++__loop23_iteration;
                         __printer.WriteTemplateOutput("                ");
                         __printer.TrimLine();
                         __printer.WriteLine();
@@ -2063,17 +1533,6 @@ namespace SoaMetaModel
                     __printer.WriteTemplateOutput("    }");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("}");
-                    __printer.WriteLine();
-                }
-                return __result;
-            }
-            
-            public List<string> Generated_GenerateInstallCertificates()
-            {
-                List<string> __result = new List<string>();
-                using(TemplatePrinter __printer = new TemplatePrinter(__result))
-                {
-                    __printer.WriteTemplateOutput("^");
                     __printer.WriteLine();
                 }
                 return __result;

@@ -11,23 +11,6 @@ namespace SoaMetaModel
     public partial class VSSoapGenerator
     {
             #region functions from "D:\git\soal-oslo\Src\Main\SoaGeneratorLib\VSSoapGeneratorLib.mcg"
-            public List<string> Generated_GenerateService(Endpoint endp)
-            {
-                List<string> __result = new List<string>();
-                using(TemplatePrinter __printer = new TemplatePrinter(__result))
-                {
-                    __printer.WriteTemplateOutput("<%@ ServiceHost Language=\"C#\" Debug=\"true\" Service=\"");
-                    __printer.Write(endp.Namespace.FullName);
-                    __printer.WriteTemplateOutput(".");
-                    __printer.Write(endp.Name);
-                    __printer.WriteTemplateOutput("\" CodeBehind=\"~/App_Code/");
-                    __printer.Write(endp.Name);
-                    __printer.WriteTemplateOutput(".cs\" %>");
-                    __printer.WriteLine();
-                }
-                return __result;
-            }
-            
             public List<string> Generated_GenerateWebConfig()
             {
                 List<string> __result = new List<string>();
@@ -995,109 +978,6 @@ namespace SoaMetaModel
                     __printer.TrimLine();
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("</client>");
-                    __printer.WriteLine();
-                }
-                return __result;
-            }
-            
-            public List<string> Generated_GenerateServicesDefaultAspx()
-            {
-                List<string> __result = new List<string>();
-                using(TemplatePrinter __printer = new TemplatePrinter(__result))
-                {
-                    __printer.WriteTemplateOutput("<%@ Page Title=\"Services Home Page\" Language=\"C#\" MasterPageFile=\"~/Site.master\" AutoEventWireup=\"true\"");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    CodeFile=\"~/Services/Default.aspx.cs\" Inherits=\"Services._Default\" %>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("<asp:Content ID=\"HeaderContent\" runat=\"server\" ContentPlaceHolderID=\"HeadContent\">");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("</asp:Content>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("<asp:Content ID=\"BodyContent\" runat=\"server\" ContentPlaceHolderID=\"MainContent\">");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <h2>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("        Services");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    </h2>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    <p>");
-                    __printer.WriteLine();
-                    int __loop17_iteration = 0;
-                    int id = 1;
-                    var __loop17_result =
-                        (from __loop17_tmp_item___noname17 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                        from __loop17_tmp_item_endpoint in EnumerableExtensions.Enumerate((__loop17_tmp_item___noname17).GetEnumerator()).OfType<Endpoint>()
-                        select
-                            new
-                            {
-                                __loop17_item___noname17 = __loop17_tmp_item___noname17,
-                                __loop17_item_endpoint = __loop17_tmp_item_endpoint,
-                            }).ToArray();
-                    foreach (var __loop17_item in __loop17_result)
-                    {
-                        var __noname17 = __loop17_item.__loop17_item___noname17;
-                        var endpoint = __loop17_item.__loop17_item_endpoint;
-                        ++__loop17_iteration;
-                        if (__loop17_iteration >= 2)
-                        {
-                            id = id + 1;
-                        }
-                        __printer.TrimLine();
-                        __printer.WriteLine();
-                        __printer.WriteTemplateOutput("    <asp:HyperLink ID=\"HyperLink");
-                        __printer.Write(id);
-                        __printer.WriteTemplateOutput("\" runat=\"server\" NavigateUrl=\"~/Services/");
-                        __printer.Write(endpoint.Name);
-                        __printer.WriteTemplateOutput(".svc\">");
-                        __printer.Write(endpoint.Name);
-                        __printer.WriteTemplateOutput("</asp:HyperLink><br/>");
-                        __printer.WriteLine();
-                    }
-                    __printer.TrimLine();
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("    </p>");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("</asp:Content>");
-                    __printer.WriteLine();
-                }
-                return __result;
-            }
-            
-            public List<string> Generated_GenerateServicesDefaultAspxCs()
-            {
-                List<string> __result = new List<string>();
-                using(TemplatePrinter __printer = new TemplatePrinter(__result))
-                {
-                    __printer.WriteTemplateOutput("using System;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Collections.Generic;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Linq;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Web;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Web.UI;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("using System.Web.UI.WebControls;");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("namespace Services");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("{");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("	public partial class _Default : System.Web.UI.Page");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("	{");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("		protected void Page_Load(object sender, EventArgs e)");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("		{");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("		}");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("	}");
-                    __printer.WriteLine();
-                    __printer.WriteTemplateOutput("}");
                     __printer.WriteLine();
                 }
                 return __result;
