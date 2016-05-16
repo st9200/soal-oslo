@@ -30,6 +30,7 @@ namespace SoaMetaModel
                     this.CxfVersion = "2.7.11";
                     this.GenerateJksService = true;
                     this.GenerateJksClient = true;
+                    this.GenerateRestfulWebService = false;
                 }
                 
                 public string ProjectName { get; set; }
@@ -38,6 +39,7 @@ namespace SoaMetaModel
                 public string CxfVersion { get; set; }
                 public bool GenerateJksService { get; set; }
                 public bool GenerateJksClient { get; set; }
+                public bool GenerateRestfulWebService { get; set; }
             }
             
             public override void Generated_Main()
@@ -192,7 +194,7 @@ namespace SoaMetaModel
                 return __result;
             }
             
-            public List<string> Generated_Generate_client_project()
+            public List<string> Generated_Generate_client_project(bool rest)
             {
                 List<string> __result = new List<string>();
                 using(TemplatePrinter __printer = new TemplatePrinter(__result))
@@ -223,11 +225,41 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("		</buildCommand>");
                     __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	");
+                    if (rest)
+                    {
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("		<buildCommand>");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("            <name>org.eclipse.m2e.core.maven2Builder</name>");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("            <arguments>");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("            </arguments>");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        </buildCommand>");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("	");
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
                     __printer.WriteTemplateOutput("	</buildSpec>");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("	<natures>");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("		<nature>org.eclipse.jdt.core.javanature</nature>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		");
+                    if (rest)
+                    {
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("		<nature>org.eclipse.m2e.core.maven2Nature</nature>");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("		");
+                    }
+                    __printer.TrimLine();
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("	</natures>");
                     __printer.WriteLine();
@@ -259,6 +291,118 @@ namespace SoaMetaModel
                     __printer.WriteTemplateOutput("	<classpathentry kind=\"output\" path=\"bin\"/>");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("</classpath>");
+                    __printer.WriteLine();
+                }
+                return __result;
+            }
+            
+            public List<string> Generated_Generate_client_classpath_rest()
+            {
+                List<string> __result = new List<string>();
+                using(TemplatePrinter __printer = new TemplatePrinter(__result))
+                {
+                    __printer.WriteTemplateOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("<classpath>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	<classpathentry kind=\"src\" output=\"target/classes\" path=\"src/main/java\">");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		<attributes>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			<attribute name=\"optional\" value=\"true\"/>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			<attribute name=\"maven.pomderived\" value=\"true\"/>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		</attributes>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	</classpathentry>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	<classpathentry excluding=\"**\" kind=\"src\" output=\"target/classes\" path=\"src/main/resources\">");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		<attributes>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			<attribute name=\"maven.pomderived\" value=\"true\"/>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		</attributes>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	</classpathentry>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	<classpathentry kind=\"src\" output=\"target/test-classes\" path=\"src/test/java\">");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		<attributes>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			<attribute name=\"optional\" value=\"true\"/>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			<attribute name=\"maven.pomderived\" value=\"true\"/>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		</attributes>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	</classpathentry>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	<classpathentry excluding=\"**\" kind=\"src\" output=\"target/test-classes\" path=\"src/test/resources\">");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		<attributes>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			<attribute name=\"maven.pomderived\" value=\"true\"/>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		</attributes>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	</classpathentry>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	<classpathentry kind=\"con\" path=\"org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER\">");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		<attributes>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			<attribute name=\"maven.pomderived\" value=\"true\"/>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		</attributes>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	</classpathentry>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0\"/>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	<classpathentry kind=\"output\" path=\"target/classes\"/>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("</classpath>");
+                    __printer.WriteLine();
+                }
+                return __result;
+            }
+            
+            public List<string> Generated_Generate_pom()
+            {
+                List<string> __result = new List<string>();
+                using(TemplatePrinter __printer = new TemplatePrinter(__result))
+                {
+                    __printer.WriteTemplateOutput("<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("  <modelVersion>4.0.0</modelVersion>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("  <groupId>");
+                    __printer.Write(Properties.ProjectName);
+                    __printer.WriteTemplateOutput("Client</groupId>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("  <artifactId>");
+                    __printer.Write(Properties.ProjectName);
+                    __printer.WriteTemplateOutput("Client</artifactId>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("  <version>0.0.1-SNAPSHOT</version>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("  <dependencies>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("    <dependency>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        <groupId>org.jboss.resteasy</groupId>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        <artifactId>resteasy-client</artifactId>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("        <version>3.0.10.Final</version>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("    </dependency>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("  </dependencies>");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("</project>");
                     __printer.WriteLine();
                 }
                 return __result;
@@ -426,7 +570,7 @@ namespace SoaMetaModel
                 return __result;
             }
             
-            public List<string> Generated_Generate_MetaInf_Manifest()
+            public List<string> Generated_Generate_MetaInf_Manifest(bool rest)
             {
                 List<string> __result = new List<string>();
                 using(TemplatePrinter __printer = new TemplatePrinter(__result))
@@ -435,7 +579,16 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("Class-Path: ");
                     __printer.WriteLine();
-                    __printer.WriteTemplateOutput("Dependencies: org.springframework.spring,org.apache.cxf,org.apache.ws.security");
+                    if (!rest)
+                    {
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("Dependencies: org.springframework.spring,org.apache.cxf,org.apache.ws.security");
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
                     __printer.WriteLine();
                 }
                 return __result;
@@ -876,28 +1029,70 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("        <h1>List of Services</h1>");
                     __printer.WriteLine();
-                    int __loop3_iteration = 0;
-                    var __loop3_result =
-                        (from __loop3_tmp_item___noname2 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                        from __loop3_tmp_item_endpoint in EnumerableExtensions.Enumerate((__loop3_tmp_item___noname2).GetEnumerator()).OfType<Endpoint>()
-                        select
-                            new
-                            {
-                                __loop3_item___noname2 = __loop3_tmp_item___noname2,
-                                __loop3_item_endpoint = __loop3_tmp_item_endpoint,
-                            }).ToArray();
-                    foreach (var __loop3_item in __loop3_result)
+                    if (Properties.GenerateRestfulWebService)
                     {
-                        var __noname2 = __loop3_item.__loop3_item___noname2;
-                        var endpoint = __loop3_item.__loop3_item_endpoint;
-                        ++__loop3_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
-                        __printer.WriteTemplateOutput("        <a href=\"");
-                        __printer.Write(endpoint.Name);
-                        __printer.WriteTemplateOutput("?wsdl\">");
-                        __printer.Write(endpoint.Name);
-                        __printer.WriteTemplateOutput("</a><br/>");
+                        __printer.WriteTemplateOutput("	");
+                        int __loop3_iteration = 0;
+                        var __loop3_result =
+                            (from __loop3_tmp_item___noname2 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                            from __loop3_tmp_item_intf in EnumerableExtensions.Enumerate((__loop3_tmp_item___noname2).GetEnumerator()).OfType<Interface>()
+                            select
+                                new
+                                {
+                                    __loop3_item___noname2 = __loop3_tmp_item___noname2,
+                                    __loop3_item_intf = __loop3_tmp_item_intf,
+                                }).ToArray();
+                        foreach (var __loop3_item in __loop3_result)
+                        {
+                            var __noname2 = __loop3_item.__loop3_item___noname2;
+                            var intf = __loop3_item.__loop3_item_intf;
+                            ++__loop3_iteration;
+                            __printer.TrimLine();
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("        <a href=\"");
+                            __printer.Write(intf.Name);
+                            __printer.WriteTemplateOutput("\">");
+                            __printer.Write(intf.Name);
+                            __printer.WriteTemplateOutput("</a><br/>");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("	");
+                        }
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                    }
+                    else
+                    {
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("	");
+                        int __loop4_iteration = 0;
+                        var __loop4_result =
+                            (from __loop4_tmp_item___noname3 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                            from __loop4_tmp_item_endpoint in EnumerableExtensions.Enumerate((__loop4_tmp_item___noname3).GetEnumerator()).OfType<Endpoint>()
+                            select
+                                new
+                                {
+                                    __loop4_item___noname3 = __loop4_tmp_item___noname3,
+                                    __loop4_item_endpoint = __loop4_tmp_item_endpoint,
+                                }).ToArray();
+                        foreach (var __loop4_item in __loop4_result)
+                        {
+                            var __noname3 = __loop4_item.__loop4_item___noname3;
+                            var endpoint = __loop4_item.__loop4_item_endpoint;
+                            ++__loop4_iteration;
+                            __printer.TrimLine();
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("        <a href=\"");
+                            __printer.Write(endpoint.Name);
+                            __printer.WriteTemplateOutput("?wsdl\">");
+                            __printer.Write(endpoint.Name);
+                            __printer.WriteTemplateOutput("</a><br/>");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("	");
+                        }
+                        __printer.TrimLine();
                         __printer.WriteLine();
                     }
                     __printer.TrimLine();
@@ -1034,24 +1229,24 @@ namespace SoaMetaModel
                     __printer.WriteTemplateOutput("            String url = URLS.get(TARGET);");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("			");
-                    int __loop4_iteration = 0;
-                    var __loop4_result =
-                        (from __loop4_tmp_item___noname3 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
-                        from __loop4_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop4_tmp_item___noname3.Declarations).GetEnumerator())
-                        from __loop4_tmp_item_endp in EnumerableExtensions.Enumerate((__loop4_tmp_item_Declarations).GetEnumerator()).OfType<Endpoint>()
+                    int __loop5_iteration = 0;
+                    var __loop5_result =
+                        (from __loop5_tmp_item___noname4 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
+                        from __loop5_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop5_tmp_item___noname4.Declarations).GetEnumerator())
+                        from __loop5_tmp_item_endp in EnumerableExtensions.Enumerate((__loop5_tmp_item_Declarations).GetEnumerator()).OfType<Endpoint>()
                         select
                             new
                             {
-                                __loop4_item___noname3 = __loop4_tmp_item___noname3,
-                                __loop4_item_Declarations = __loop4_tmp_item_Declarations,
-                                __loop4_item_endp = __loop4_tmp_item_endp,
+                                __loop5_item___noname4 = __loop5_tmp_item___noname4,
+                                __loop5_item_Declarations = __loop5_tmp_item_Declarations,
+                                __loop5_item_endp = __loop5_tmp_item_endp,
                             }).ToArray();
-                    foreach (var __loop4_item in __loop4_result)
+                    foreach (var __loop5_item in __loop5_result)
                     {
-                        var __noname3 = __loop4_item.__loop4_item___noname3;
-                        var Declarations = __loop4_item.__loop4_item_Declarations;
-                        var endp = __loop4_item.__loop4_item_endp;
-                        ++__loop4_iteration;
+                        var __noname4 = __loop5_item.__loop5_item___noname4;
+                        var Declarations = __loop5_item.__loop5_item_Declarations;
+                        var endp = __loop5_item.__loop5_item_endp;
+                        ++__loop5_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("            test");
@@ -1079,24 +1274,24 @@ namespace SoaMetaModel
                     __printer.WriteTemplateOutput("^");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("	");
-                    int __loop5_iteration = 0;
-                    var __loop5_result =
-                        (from __loop5_tmp_item___noname4 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
-                        from __loop5_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop5_tmp_item___noname4.Declarations).GetEnumerator())
-                        from __loop5_tmp_item_intf in EnumerableExtensions.Enumerate((__loop5_tmp_item_Declarations).GetEnumerator()).OfType<Interface>()
+                    int __loop6_iteration = 0;
+                    var __loop6_result =
+                        (from __loop6_tmp_item___noname5 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
+                        from __loop6_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop6_tmp_item___noname5.Declarations).GetEnumerator())
+                        from __loop6_tmp_item_intf in EnumerableExtensions.Enumerate((__loop6_tmp_item_Declarations).GetEnumerator()).OfType<Interface>()
                         select
                             new
                             {
-                                __loop5_item___noname4 = __loop5_tmp_item___noname4,
-                                __loop5_item_Declarations = __loop5_tmp_item_Declarations,
-                                __loop5_item_intf = __loop5_tmp_item_intf,
+                                __loop6_item___noname5 = __loop6_tmp_item___noname5,
+                                __loop6_item_Declarations = __loop6_tmp_item_Declarations,
+                                __loop6_item_intf = __loop6_tmp_item_intf,
                             }).ToArray();
-                    foreach (var __loop5_item in __loop5_result)
+                    foreach (var __loop6_item in __loop6_result)
                     {
-                        var __noname4 = __loop5_item.__loop5_item___noname4;
-                        var Declarations = __loop5_item.__loop5_item_Declarations;
-                        var intf = __loop5_item.__loop5_item_intf;
-                        ++__loop5_iteration;
+                        var __noname5 = __loop6_item.__loop6_item___noname5;
+                        var Declarations = __loop6_item.__loop6_item_Declarations;
+                        var intf = __loop6_item.__loop6_item_intf;
+                        ++__loop6_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("    private static void test");
@@ -1174,6 +1369,135 @@ namespace SoaMetaModel
                         __printer.WriteTemplateOutput("	");
                     }
                     __printer.TrimLine();
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("}");
+                    __printer.WriteLine();
+                }
+                return __result;
+            }
+            
+            public List<string> Generated_Generate_Program_java_rest(Namespace ns)
+            {
+                List<string> __result = new List<string>();
+                using(TemplatePrinter __printer = new TemplatePrinter(__result))
+                {
+                    __printer.WriteTemplateOutput("/*");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput(" * To change this license header, choose License Headers in Project Properties.");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput(" * To change this template file, choose Tools | Templates");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput(" * and open the template in the editor.");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput(" */");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("package ");
+                    __printer.Write(Generated_GetPackage(ns).ToLower());
+                    __printer.WriteTemplateOutput("client;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("import javax.ws.rs.client.Client;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("import javax.ws.rs.client.ClientBuilder;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("import javax.ws.rs.client.WebTarget;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    int __loop7_iteration = 0;
+                    var __loop7_result =
+                        (from __loop7_tmp_item___noname6 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
+                        from __loop7_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop7_tmp_item___noname6.Declarations).GetEnumerator())
+                        from __loop7_tmp_item_intf in EnumerableExtensions.Enumerate((__loop7_tmp_item_Declarations).GetEnumerator()).OfType<Interface>()
+                        select
+                            new
+                            {
+                                __loop7_item___noname6 = __loop7_tmp_item___noname6,
+                                __loop7_item_Declarations = __loop7_tmp_item_Declarations,
+                                __loop7_item_intf = __loop7_tmp_item_intf,
+                            }).ToArray();
+                    foreach (var __loop7_item in __loop7_result)
+                    {
+                        var __noname6 = __loop7_item.__loop7_item___noname6;
+                        var Declarations = __loop7_item.__loop7_item_Declarations;
+                        var intf = __loop7_item.__loop7_item_intf;
+                        ++__loop7_iteration;
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("import ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(intf.Name);
+                        __printer.WriteTemplateOutput(";");
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("public class Program {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	public static void main(String");
+                    __printer.Write("[]");
+                    __printer.WriteTemplateOutput(" args) {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		try {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			Client client = ClientBuilder.newClient();");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			WebTarget target = client.target(\"http://localhost:8080/");
+                    __printer.Write(Properties.ProjectName);
+                    __printer.WriteTemplateOutput("\");");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			ResteasyWebTarget rtarget = (ResteasyWebTarget)target;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		");
+                    int __loop8_iteration = 0;
+                    var __loop8_result =
+                        (from __loop8_tmp_item___noname7 in EnumerableExtensions.Enumerate((ns).GetEnumerator())
+                        from __loop8_tmp_item_Declarations in EnumerableExtensions.Enumerate((__loop8_tmp_item___noname7.Declarations).GetEnumerator())
+                        from __loop8_tmp_item_intf in EnumerableExtensions.Enumerate((__loop8_tmp_item_Declarations).GetEnumerator()).OfType<Interface>()
+                        select
+                            new
+                            {
+                                __loop8_item___noname7 = __loop8_tmp_item___noname7,
+                                __loop8_item_Declarations = __loop8_tmp_item_Declarations,
+                                __loop8_item_intf = __loop8_tmp_item_intf,
+                            }).ToArray();
+                    foreach (var __loop8_item in __loop8_result)
+                    {
+                        var __noname7 = __loop8_item.__loop8_item___noname7;
+                        var Declarations = __loop8_item.__loop8_item_Declarations;
+                        var intf = __loop8_item.__loop8_item_intf;
+                        ++__loop8_iteration;
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("			");
+                        __printer.Write(intf.Name);
+                        __printer.WriteTemplateOutput(" _");
+                        __printer.Write(intf.Name);
+                        __printer.WriteTemplateOutput(" = rtarget.proxy(");
+                        __printer.Write(intf.Name);
+                        __printer.WriteTemplateOutput(".class);");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("		");
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		} catch (Exception ex) {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("			ex.printStackTrace();");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("		}");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("	}");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("^");
                     __printer.WriteLine();

@@ -139,7 +139,7 @@ namespace SoaMetaModel
                         Context.SetOutput(rootDirectory + JavaGenerator.Generated_NamespaceToPath(ns) + "/package-info.java");
                         Context.Output(JavaGenerator.Generated_GeneratePackageInfo(ns));
                         Context.SetOutput(rootDirectory + JavaGenerator.Generated_NamespaceToPath(ns) + "/ObjectFactory.java");
-                        Context.Output(JavaGenerator.Generated_GenerateObjectFactory(ns));
+                        Context.Output(Generated_GenerateObjectFactory(ns));
                         if (!Properties.NoImplementationDelegates)
                         {
                             Context.SetOutput(rootDirectory + JavaGenerator.Generated_NamespaceToPath(ns) + "/ExpressionHelper.java");
@@ -377,6 +377,646 @@ namespace SoaMetaModel
                 }
             }
             
+            public List<string> Generated_GenerateObjectFactory(Namespace ns)
+            {
+                List<string> __result = new List<string>();
+                using(TemplatePrinter __printer = new TemplatePrinter(__result))
+                {
+                    __printer.WriteTemplateOutput("package ");
+                    __printer.Write(Generated_GetPackage(ns).ToLower());
+                    __printer.WriteTemplateOutput(";");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("import javax.xml.bind.JAXBElement;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("import javax.xml.bind.annotation.XmlElementDecl;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("import javax.xml.bind.annotation.XmlRegistry;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("import javax.xml.namespace.QName;");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("^");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("@XmlRegistry");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("public class ObjectFactory {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("    public ObjectFactory() {");
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("    }");
+                    __printer.WriteLine();
+                    int __loop15_iteration = 0;
+                    var __loop15_result =
+                        (from __loop15_tmp_item___noname15 in EnumerableExtensions.Enumerate((ns.Declarations).GetEnumerator())
+                        from __loop15_tmp_item_type in EnumerableExtensions.Enumerate((__loop15_tmp_item___noname15).GetEnumerator()).OfType<StructType>()
+                        select
+                            new
+                            {
+                                __loop15_item___noname15 = __loop15_tmp_item___noname15,
+                                __loop15_item_type = __loop15_tmp_item_type,
+                            }).ToArray();
+                    foreach (var __loop15_item in __loop15_result)
+                    {
+                        var __noname15 = __loop15_item.__loop15_item___noname15;
+                        var type = __loop15_item.__loop15_item_type;
+                        ++__loop15_iteration;
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    private final static QName _");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("_QNAME = new QName(\"");
+                        __printer.Write(Generated_GetUri(ns));
+                        __printer.WriteTemplateOutput("\",\"");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("\");");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    public ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput(" create");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("() {");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        return new ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("();");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    }");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    @XmlElementDecl(namespace = \"");
+                        __printer.Write(Generated_GetUri(ns));
+                        __printer.WriteTemplateOutput("\", name = \"");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("\")");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    public JAXBElement<");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("> create");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("(");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput(" value) {");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        return new JAXBElement<");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput(">(_");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("_QNAME, ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput(".class, null, value);");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    }");
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                    int __loop16_iteration = 0;
+                    var __loop16_result =
+                        (from __loop16_tmp_item___noname16 in EnumerableExtensions.Enumerate((ns.Declarations).GetEnumerator())
+                        from __loop16_tmp_item_type in EnumerableExtensions.Enumerate((__loop16_tmp_item___noname16).GetEnumerator()).OfType<EnumType>()
+                        select
+                            new
+                            {
+                                __loop16_item___noname16 = __loop16_tmp_item___noname16,
+                                __loop16_item_type = __loop16_tmp_item_type,
+                            }).ToArray();
+                    foreach (var __loop16_item in __loop16_result)
+                    {
+                        var __noname16 = __loop16_item.__loop16_item___noname16;
+                        var type = __loop16_item.__loop16_item_type;
+                        ++__loop16_iteration;
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    private final static QName _");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("_QNAME = new QName(\"");
+                        __printer.Write(Generated_GetUri(ns));
+                        __printer.WriteTemplateOutput("\",\"");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("\");");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    @XmlElementDecl(namespace = \"");
+                        __printer.Write(Generated_GetUri(ns));
+                        __printer.WriteTemplateOutput("\", name = \"");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("\")");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    public JAXBElement<");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("> create");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("(");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput(" value) {");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        return new JAXBElement<");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput(">(_");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("_QNAME, ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput(".class, null, value);");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    }");
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                    int __loop17_iteration = 0;
+                    var __loop17_result =
+                        (from __loop17_tmp_item___noname17 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop17_tmp_item_type in EnumerableExtensions.Enumerate((__loop17_tmp_item___noname17).GetEnumerator()).OfType<ArrayType>()
+                        select
+                            new
+                            {
+                                __loop17_item___noname17 = __loop17_tmp_item___noname17,
+                                __loop17_item_type = __loop17_tmp_item_type,
+                            }).ToArray();
+                    foreach (var __loop17_item in __loop17_result)
+                    {
+                        var __noname17 = __loop17_item.__loop17_item___noname17;
+                        var type = __loop17_item.__loop17_item_type;
+                        ++__loop17_iteration;
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    ");
+                        if (type.ItemType is NullableType)
+                        {
+                            __printer.TrimLine();
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("^");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    private final static QName _ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput("_QNAME = new QName(\"");
+                            __printer.Write(Generated_GetUri(ns));
+                            __printer.WriteTemplateOutput("\",\"ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput("\");");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("^");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    public ");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput(" create_ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("() {");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("        return new ");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("();");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    }");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("^");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    @XmlElementDecl(namespace = \"");
+                            __printer.Write(Generated_GetUri(ns));
+                            __printer.WriteTemplateOutput("\", name = \"_ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("\")");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    public JAXBElement<");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("> create_ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("(");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput(" value) {");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("        return new JAXBElement<");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput(">(_ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("_QNAME, ");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOfNullable");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput(".class, null, value);");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    }");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    ");
+                        }
+                        else if (type.ItemType != BuiltInType.Byte)
+                        {
+                            __printer.TrimLine();
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("^");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    private final static QName _ArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("_QNAME = new QName(\"");
+                            __printer.Write(Generated_GetUri(ns));
+                            __printer.WriteTemplateOutput("\",\"ArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("\");");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("^");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    public ");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput(" createArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("() {");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("        return new ");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("();");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    }");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("^");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    @XmlElementDecl(namespace = \"");
+                            __printer.Write(Generated_GetUri(ns));
+                            __printer.WriteTemplateOutput("\", name = \"ArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("\")");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    public JAXBElement<");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("> createArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("(");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput(" value) {");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("        return new JAXBElement<");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput(">(_ArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput("_QNAME, ");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".ArrayOf");
+                            __printer.Write(Generated_FirstLetterUp(type.ItemType.Name));
+                            __printer.WriteTemplateOutput(".class, null, value);");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    }");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    ");
+                        }
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                    if (!Properties.NoImplementationDelegates)
+                    {
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    private final static QName _SoaMMFault_QNAME = new QName(\"");
+                        __printer.Write(Generated_GetUri(ns));
+                        __printer.WriteTemplateOutput("\",\"SoaMMException\");");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    public ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".SoaMMFault createSoaMMFault() {");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        return new ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".SoaMMFault();");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    }");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    @XmlElementDecl(namespace = \"");
+                        __printer.Write(Generated_GetUri(ns));
+                        __printer.WriteTemplateOutput("\", name = \"SoaMMException\")");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    public JAXBElement<");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".SoaMMFault> createSoaMMFault(");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".SoaMMFault value) {");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        return new JAXBElement<");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".SoaMMFault>(_SoaMMFault_QNAME, ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".SoaMMFault.class, null, value);");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    }");
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                    int __loop18_iteration = 0;
+                    var __loop18_result =
+                        (from __loop18_tmp_item___noname18 in EnumerableExtensions.Enumerate((ns.Declarations).GetEnumerator())
+                        from __loop18_tmp_item_type in EnumerableExtensions.Enumerate((__loop18_tmp_item___noname18).GetEnumerator()).OfType<ExceptionType>()
+                        select
+                            new
+                            {
+                                __loop18_item___noname18 = __loop18_tmp_item___noname18,
+                                __loop18_item_type = __loop18_tmp_item_type,
+                            }).ToArray();
+                    foreach (var __loop18_item in __loop18_result)
+                    {
+                        var __noname18 = __loop18_item.__loop18_item___noname18;
+                        var type = __loop18_item.__loop18_item_type;
+                        ++__loop18_iteration;
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    private final static QName _");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("Fault_QNAME = new QName(\"");
+                        __printer.Write(Generated_GetUri(ns));
+                        __printer.WriteTemplateOutput("\",\"");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("\");");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    public ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("Fault create");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("Fault() {");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        return new ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("Fault();");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    }");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("^");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    @XmlElementDecl(namespace = \"");
+                        __printer.Write(Generated_GetUri(ns));
+                        __printer.WriteTemplateOutput("\", name = \"");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("\")");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    public JAXBElement<");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("Fault> create");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("Fault(");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("Fault value) {");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("        return new JAXBElement<");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("Fault>(_");
+                        __printer.Write(Generated_FirstLetterUp(type.Name));
+                        __printer.WriteTemplateOutput("Fault_QNAME, ");
+                        __printer.Write(Generated_GetPackage(ns).ToLower());
+                        __printer.WriteTemplateOutput(".");
+                        __printer.Write(type.Name);
+                        __printer.WriteTemplateOutput("Fault.class, null, value);");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("    }");
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                    int __loop19_iteration = 0;
+                    var __loop19_result =
+                        (from __loop19_tmp_item___noname19 in EnumerableExtensions.Enumerate((ns.Declarations).GetEnumerator())
+                        from __loop19_tmp_item_intf in EnumerableExtensions.Enumerate((__loop19_tmp_item___noname19).GetEnumerator()).OfType<Interface>()
+                        select
+                            new
+                            {
+                                __loop19_item___noname19 = __loop19_tmp_item___noname19,
+                                __loop19_item_intf = __loop19_tmp_item_intf,
+                            }).ToArray();
+                    foreach (var __loop19_item in __loop19_result)
+                    {
+                        var __noname19 = __loop19_item.__loop19_item___noname19;
+                        var intf = __loop19_item.__loop19_item_intf;
+                        ++__loop19_iteration;
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        int __loop20_iteration = 0;
+                        var __loop20_result =
+                            (from __loop20_tmp_item___noname20 in EnumerableExtensions.Enumerate((intf.Operations).GetEnumerator())
+                            from __loop20_tmp_item_type in EnumerableExtensions.Enumerate((__loop20_tmp_item___noname20).GetEnumerator()).OfType<Operation>()
+                            select
+                                new
+                                {
+                                    __loop20_item___noname20 = __loop20_tmp_item___noname20,
+                                    __loop20_item_type = __loop20_tmp_item_type,
+                                }).ToArray();
+                        foreach (var __loop20_item in __loop20_result)
+                        {
+                            var __noname20 = __loop20_item.__loop20_item___noname20;
+                            var type = __loop20_item.__loop20_item_type;
+                            ++__loop20_iteration;
+                            __printer.TrimLine();
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("^");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    private final static QName _");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput("_QNAME = new QName(\"");
+                            __printer.Write(Generated_GetUri(ns));
+                            __printer.WriteTemplateOutput("\",\"");
+                            __printer.Write(type.Name);
+                            __printer.WriteTemplateOutput("\");");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("^");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    public ");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput(" create");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput("() {");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("        return new ");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput("();");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    }");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("^");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    @XmlElementDecl(namespace = \"");
+                            __printer.Write(Generated_GetUri(ns));
+                            __printer.WriteTemplateOutput("\", name = \"");
+                            __printer.Write(type.Name);
+                            __printer.WriteTemplateOutput("\")");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    public JAXBElement<");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput("> create");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput("(");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput(" value) {");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("        return new JAXBElement<");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput(">(_");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput("_QNAME, ");
+                            __printer.Write(Generated_GetPackage(ns).ToLower());
+                            __printer.WriteTemplateOutput(".");
+                            __printer.Write(Generated_FirstLetterUp(type.Name));
+                            __printer.WriteTemplateOutput(".class, null, value);");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    }");
+                            __printer.WriteLine();
+                            __printer.WriteTemplateOutput("    ");
+                            if (type.ReturnType != PseudoType.Async)
+                            {
+                                __printer.TrimLine();
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("^");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("    private final static QName _");
+                                __printer.Write(Generated_FirstLetterUp(type.Name));
+                                __printer.WriteTemplateOutput("Response_QNAME = new QName(\"");
+                                __printer.Write(Generated_GetUri(ns));
+                                __printer.WriteTemplateOutput("\",\"");
+                                __printer.Write(type.Name);
+                                __printer.WriteTemplateOutput("Response\");");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("^");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("    public ");
+                                __printer.Write(Generated_GetPackage(ns).ToLower());
+                                __printer.WriteTemplateOutput(".");
+                                __printer.Write(Generated_FirstLetterUp(type.Name));
+                                __printer.WriteTemplateOutput("Response create");
+                                __printer.Write(Generated_FirstLetterUp(type.Name));
+                                __printer.WriteTemplateOutput("Response() {");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("        return new ");
+                                __printer.Write(Generated_GetPackage(ns).ToLower());
+                                __printer.WriteTemplateOutput(".");
+                                __printer.Write(Generated_FirstLetterUp(type.Name));
+                                __printer.WriteTemplateOutput("Response();");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("    }");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("^");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("    @XmlElementDecl(namespace = \"");
+                                __printer.Write(Generated_GetUri(ns));
+                                __printer.WriteTemplateOutput("\", name = \"");
+                                __printer.Write(type.Name);
+                                __printer.WriteTemplateOutput("Response\")");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("    public JAXBElement<");
+                                __printer.Write(Generated_GetPackage(ns).ToLower());
+                                __printer.WriteTemplateOutput(".");
+                                __printer.Write(Generated_FirstLetterUp(type.Name));
+                                __printer.WriteTemplateOutput("Response> create");
+                                __printer.Write(Generated_FirstLetterUp(type.Name));
+                                __printer.WriteTemplateOutput("Response(");
+                                __printer.Write(Generated_GetPackage(ns).ToLower());
+                                __printer.WriteTemplateOutput(".");
+                                __printer.Write(Generated_FirstLetterUp(type.Name));
+                                __printer.WriteTemplateOutput("Response value) {");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("        return new JAXBElement<");
+                                __printer.Write(Generated_GetPackage(ns).ToLower());
+                                __printer.WriteTemplateOutput(".");
+                                __printer.Write(Generated_FirstLetterUp(type.Name));
+                                __printer.WriteTemplateOutput("Response>(_");
+                                __printer.Write(Generated_FirstLetterUp(type.Name));
+                                __printer.WriteTemplateOutput("Response_QNAME, ");
+                                __printer.Write(Generated_GetPackage(ns).ToLower());
+                                __printer.WriteTemplateOutput(".");
+                                __printer.Write(Generated_FirstLetterUp(type.Name));
+                                __printer.WriteTemplateOutput("Response.class, null, value);");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("    }");
+                                __printer.WriteLine();
+                                __printer.WriteTemplateOutput("    ");
+                            }
+                            __printer.TrimLine();
+                            __printer.WriteLine();
+                        }
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
+                    __printer.WriteLine();
+                    __printer.WriteTemplateOutput("}");
+                    __printer.WriteLine();
+                }
+                return __result;
+            }
+            
             public List<string> Generated_GenerateImplementationBase(Interface intf)
             {
                 List<string> __result = new List<string>();
@@ -394,21 +1034,21 @@ namespace SoaMetaModel
                     __printer.Write(intf.Name);
                     __printer.WriteTemplateOutput(" {");
                     __printer.WriteLine();
-                    int __loop15_iteration = 0;
-                    var __loop15_result =
-                        (from __loop15_tmp_item___noname15 in EnumerableExtensions.Enumerate((intf.Operations).GetEnumerator())
-                        from __loop15_tmp_item_op in EnumerableExtensions.Enumerate((__loop15_tmp_item___noname15).GetEnumerator()).OfType<Operation>()
+                    int __loop21_iteration = 0;
+                    var __loop21_result =
+                        (from __loop21_tmp_item___noname21 in EnumerableExtensions.Enumerate((intf.Operations).GetEnumerator())
+                        from __loop21_tmp_item_op in EnumerableExtensions.Enumerate((__loop21_tmp_item___noname21).GetEnumerator()).OfType<Operation>()
                         select
                             new
                             {
-                                __loop15_item___noname15 = __loop15_tmp_item___noname15,
-                                __loop15_item_op = __loop15_tmp_item_op,
+                                __loop21_item___noname21 = __loop21_tmp_item___noname21,
+                                __loop21_item_op = __loop21_tmp_item_op,
                             }).ToArray();
-                    foreach (var __loop15_item in __loop15_result)
+                    foreach (var __loop21_item in __loop21_result)
                     {
-                        var __noname15 = __loop15_item.__loop15_item___noname15;
-                        var op = __loop15_item.__loop15_item_op;
-                        ++__loop15_iteration;
+                        var __noname21 = __loop21_item.__loop21_item___noname21;
+                        var op = __loop21_item.__loop21_item_op;
+                        ++__loop21_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("^");
@@ -443,23 +1083,23 @@ namespace SoaMetaModel
                         __printer.Write(Generated_FirstLetterLow(op.Name));
                         __printer.WriteTemplateOutput("(");
                         __printer.WriteLine();
-                        int __loop16_iteration = 0;
+                        int __loop22_iteration = 0;
                         string comma = "";
-                        var __loop16_result =
-                            (from __loop16_tmp_item___noname16 in EnumerableExtensions.Enumerate((op.Parameters).GetEnumerator())
-                            from __loop16_tmp_item_pa in EnumerableExtensions.Enumerate((__loop16_tmp_item___noname16).GetEnumerator()).OfType<OperationParameter>()
+                        var __loop22_result =
+                            (from __loop22_tmp_item___noname22 in EnumerableExtensions.Enumerate((op.Parameters).GetEnumerator())
+                            from __loop22_tmp_item_pa in EnumerableExtensions.Enumerate((__loop22_tmp_item___noname22).GetEnumerator()).OfType<OperationParameter>()
                             select
                                 new
                                 {
-                                    __loop16_item___noname16 = __loop16_tmp_item___noname16,
-                                    __loop16_item_pa = __loop16_tmp_item_pa,
+                                    __loop22_item___noname22 = __loop22_tmp_item___noname22,
+                                    __loop22_item_pa = __loop22_tmp_item_pa,
                                 }).ToArray();
-                        foreach (var __loop16_item in __loop16_result)
+                        foreach (var __loop22_item in __loop22_result)
                         {
-                            var __noname16 = __loop16_item.__loop16_item___noname16;
-                            var pa = __loop16_item.__loop16_item_pa;
-                            ++__loop16_iteration;
-                            if (__loop16_iteration >= 2)
+                            var __noname22 = __loop22_item.__loop22_item___noname22;
+                            var pa = __loop22_item.__loop22_item_pa;
+                            ++__loop22_iteration;
+                            if (__loop22_iteration >= 2)
                             {
                                 comma = ",";
                             }
@@ -484,23 +1124,23 @@ namespace SoaMetaModel
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput(")");
                         __printer.WriteLine();
-                        int __loop17_iteration = 0;
+                        int __loop23_iteration = 0;
                         string del = JavaGenerator.Generated_ThrowsSoaMMException();
-                        var __loop17_result =
-                            (from __loop17_tmp_item___noname17 in EnumerableExtensions.Enumerate((op.Exceptions).GetEnumerator())
-                            from __loop17_tmp_item_ex in EnumerableExtensions.Enumerate((__loop17_tmp_item___noname17).GetEnumerator()).OfType<ExceptionType>()
+                        var __loop23_result =
+                            (from __loop23_tmp_item___noname23 in EnumerableExtensions.Enumerate((op.Exceptions).GetEnumerator())
+                            from __loop23_tmp_item_ex in EnumerableExtensions.Enumerate((__loop23_tmp_item___noname23).GetEnumerator()).OfType<ExceptionType>()
                             select
                                 new
                                 {
-                                    __loop17_item___noname17 = __loop17_tmp_item___noname17,
-                                    __loop17_item_ex = __loop17_tmp_item_ex,
+                                    __loop23_item___noname23 = __loop23_tmp_item___noname23,
+                                    __loop23_item_ex = __loop23_tmp_item_ex,
                                 }).ToArray();
-                        foreach (var __loop17_item in __loop17_result)
+                        foreach (var __loop23_item in __loop23_result)
                         {
-                            var __noname17 = __loop17_item.__loop17_item___noname17;
-                            var ex = __loop17_item.__loop17_item_ex;
-                            ++__loop17_iteration;
-                            if (__loop17_iteration >= 2)
+                            var __noname23 = __loop23_item.__loop23_item___noname23;
+                            var ex = __loop23_item.__loop23_item_ex;
+                            ++__loop23_iteration;
+                            if (__loop23_iteration >= 2)
                             {
                                 del = ", ";
                             }
@@ -534,23 +1174,23 @@ namespace SoaMetaModel
                     __printer.Write(Generated_FirstLetterLow(op.Name));
                     __printer.WriteTemplateOutput("(\\");
                     __printer.WriteLine();
-                    int __loop18_iteration = 0;
+                    int __loop24_iteration = 0;
                     string comma = "";
-                    var __loop18_result =
-                        (from __loop18_tmp_item___noname18 in EnumerableExtensions.Enumerate((op.Parameters).GetEnumerator())
-                        from __loop18_tmp_item_pa in EnumerableExtensions.Enumerate((__loop18_tmp_item___noname18).GetEnumerator()).OfType<OperationParameter>()
+                    var __loop24_result =
+                        (from __loop24_tmp_item___noname24 in EnumerableExtensions.Enumerate((op.Parameters).GetEnumerator())
+                        from __loop24_tmp_item_pa in EnumerableExtensions.Enumerate((__loop24_tmp_item___noname24).GetEnumerator()).OfType<OperationParameter>()
                         select
                             new
                             {
-                                __loop18_item___noname18 = __loop18_tmp_item___noname18,
-                                __loop18_item_pa = __loop18_tmp_item_pa,
+                                __loop24_item___noname24 = __loop24_tmp_item___noname24,
+                                __loop24_item_pa = __loop24_tmp_item_pa,
                             }).ToArray();
-                    foreach (var __loop18_item in __loop18_result)
+                    foreach (var __loop24_item in __loop24_result)
                     {
-                        var __noname18 = __loop18_item.__loop18_item___noname18;
-                        var pa = __loop18_item.__loop18_item_pa;
-                        ++__loop18_iteration;
-                        if (__loop18_iteration >= 2)
+                        var __noname24 = __loop24_item.__loop24_item___noname24;
+                        var pa = __loop24_item.__loop24_item_pa;
+                        ++__loop24_iteration;
+                        if (__loop24_iteration >= 2)
                         {
                             comma = ", ";
                         }
@@ -566,23 +1206,23 @@ namespace SoaMetaModel
                     __printer.TrimLine();
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput(")");
-                    int __loop19_iteration = 0;
+                    int __loop25_iteration = 0;
                     string del = JavaGenerator.Generated_ThrowsSoaMMException();
-                    var __loop19_result =
-                        (from __loop19_tmp_item___noname19 in EnumerableExtensions.Enumerate((op.Exceptions).GetEnumerator())
-                        from __loop19_tmp_item_ex in EnumerableExtensions.Enumerate((__loop19_tmp_item___noname19).GetEnumerator()).OfType<ExceptionType>()
+                    var __loop25_result =
+                        (from __loop25_tmp_item___noname25 in EnumerableExtensions.Enumerate((op.Exceptions).GetEnumerator())
+                        from __loop25_tmp_item_ex in EnumerableExtensions.Enumerate((__loop25_tmp_item___noname25).GetEnumerator()).OfType<ExceptionType>()
                         select
                             new
                             {
-                                __loop19_item___noname19 = __loop19_tmp_item___noname19,
-                                __loop19_item_ex = __loop19_tmp_item_ex,
+                                __loop25_item___noname25 = __loop25_tmp_item___noname25,
+                                __loop25_item_ex = __loop25_tmp_item_ex,
                             }).ToArray();
-                    foreach (var __loop19_item in __loop19_result)
+                    foreach (var __loop25_item in __loop25_result)
                     {
-                        var __noname19 = __loop19_item.__loop19_item___noname19;
-                        var ex = __loop19_item.__loop19_item_ex;
-                        ++__loop19_iteration;
-                        if (__loop19_iteration >= 2)
+                        var __noname25 = __loop25_item.__loop25_item___noname25;
+                        var ex = __loop25_item.__loop25_item_ex;
+                        ++__loop25_iteration;
+                        if (__loop25_iteration >= 2)
                         {
                             del = ", ";
                         }
@@ -634,23 +1274,23 @@ namespace SoaMetaModel
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("extends \\");
                         __printer.WriteLine();
-                        int __loop20_iteration = 0;
+                        int __loop26_iteration = 0;
                         string comma = "";
-                        var __loop20_result =
-                            (from __loop20_tmp_item___noname20 in EnumerableExtensions.Enumerate((intf.SuperInterfaces).GetEnumerator())
-                            from __loop20_tmp_item_sup in EnumerableExtensions.Enumerate((__loop20_tmp_item___noname20).GetEnumerator()).OfType<Interface>()
+                        var __loop26_result =
+                            (from __loop26_tmp_item___noname26 in EnumerableExtensions.Enumerate((intf.SuperInterfaces).GetEnumerator())
+                            from __loop26_tmp_item_sup in EnumerableExtensions.Enumerate((__loop26_tmp_item___noname26).GetEnumerator()).OfType<Interface>()
                             select
                                 new
                                 {
-                                    __loop20_item___noname20 = __loop20_tmp_item___noname20,
-                                    __loop20_item_sup = __loop20_tmp_item_sup,
+                                    __loop26_item___noname26 = __loop26_tmp_item___noname26,
+                                    __loop26_item_sup = __loop26_tmp_item_sup,
                                 }).ToArray();
-                        foreach (var __loop20_item in __loop20_result)
+                        foreach (var __loop26_item in __loop26_result)
                         {
-                            var __noname20 = __loop20_item.__loop20_item___noname20;
-                            var sup = __loop20_item.__loop20_item_sup;
-                            ++__loop20_iteration;
-                            if (__loop20_iteration >= 2)
+                            var __noname26 = __loop26_item.__loop26_item___noname26;
+                            var sup = __loop26_item.__loop26_item_sup;
+                            ++__loop26_iteration;
+                            if (__loop26_iteration >= 2)
                             {
                                 comma = ", ";
                             }
@@ -677,21 +1317,21 @@ namespace SoaMetaModel
                     }
                     __printer.TrimLine();
                     __printer.WriteLine();
-                    int __loop21_iteration = 0;
-                    var __loop21_result =
-                        (from __loop21_tmp_item___noname21 in EnumerableExtensions.Enumerate((intf.Operations).GetEnumerator())
-                        from __loop21_tmp_item_op in EnumerableExtensions.Enumerate((__loop21_tmp_item___noname21).GetEnumerator()).OfType<Operation>()
+                    int __loop27_iteration = 0;
+                    var __loop27_result =
+                        (from __loop27_tmp_item___noname27 in EnumerableExtensions.Enumerate((intf.Operations).GetEnumerator())
+                        from __loop27_tmp_item_op in EnumerableExtensions.Enumerate((__loop27_tmp_item___noname27).GetEnumerator()).OfType<Operation>()
                         select
                             new
                             {
-                                __loop21_item___noname21 = __loop21_tmp_item___noname21,
-                                __loop21_item_op = __loop21_tmp_item_op,
+                                __loop27_item___noname27 = __loop27_tmp_item___noname27,
+                                __loop27_item_op = __loop27_tmp_item_op,
                             }).ToArray();
-                    foreach (var __loop21_item in __loop21_result)
+                    foreach (var __loop27_item in __loop27_result)
                     {
-                        var __noname21 = __loop21_item.__loop21_item___noname21;
-                        var op = __loop21_item.__loop21_item_op;
-                        ++__loop21_iteration;
+                        var __noname27 = __loop27_item.__loop27_item___noname27;
+                        var op = __loop27_item.__loop27_item_op;
+                        ++__loop27_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("^");
@@ -733,23 +1373,23 @@ namespace SoaMetaModel
                                 __printer.WriteTemplateOutput("        , fault = {");
                                 __printer.WriteLine();
                                 __printer.WriteTemplateOutput("        ");
-                                int __loop22_iteration = 0;
+                                int __loop28_iteration = 0;
                                 string delim = "";
-                                var __loop22_result =
-                                    (from __loop22_tmp_item___noname22 in EnumerableExtensions.Enumerate((op.Exceptions).GetEnumerator())
-                                    from __loop22_tmp_item_ex in EnumerableExtensions.Enumerate((__loop22_tmp_item___noname22).GetEnumerator()).OfType<ExceptionType>()
+                                var __loop28_result =
+                                    (from __loop28_tmp_item___noname28 in EnumerableExtensions.Enumerate((op.Exceptions).GetEnumerator())
+                                    from __loop28_tmp_item_ex in EnumerableExtensions.Enumerate((__loop28_tmp_item___noname28).GetEnumerator()).OfType<ExceptionType>()
                                     select
                                         new
                                         {
-                                            __loop22_item___noname22 = __loop22_tmp_item___noname22,
-                                            __loop22_item_ex = __loop22_tmp_item_ex,
+                                            __loop28_item___noname28 = __loop28_tmp_item___noname28,
+                                            __loop28_item_ex = __loop28_tmp_item_ex,
                                         }).ToArray();
-                                foreach (var __loop22_item in __loop22_result)
+                                foreach (var __loop28_item in __loop28_result)
                                 {
-                                    var __noname22 = __loop22_item.__loop22_item___noname22;
-                                    var ex = __loop22_item.__loop22_item_ex;
-                                    ++__loop22_iteration;
-                                    if (__loop22_iteration >= 2)
+                                    var __noname28 = __loop28_item.__loop28_item___noname28;
+                                    var ex = __loop28_item.__loop28_item_ex;
+                                    ++__loop28_iteration;
+                                    if (__loop28_iteration >= 2)
                                     {
                                         delim = ",";
                                     }
@@ -826,23 +1466,23 @@ namespace SoaMetaModel
                                 __printer.WriteTemplateOutput("        , fault = {");
                                 __printer.WriteLine();
                                 __printer.WriteTemplateOutput("        ");
-                                int __loop23_iteration = 0;
+                                int __loop29_iteration = 0;
                                 string delim = "";
-                                var __loop23_result =
-                                    (from __loop23_tmp_item___noname23 in EnumerableExtensions.Enumerate((op.Exceptions).GetEnumerator())
-                                    from __loop23_tmp_item_ex in EnumerableExtensions.Enumerate((__loop23_tmp_item___noname23).GetEnumerator()).OfType<ExceptionType>()
+                                var __loop29_result =
+                                    (from __loop29_tmp_item___noname29 in EnumerableExtensions.Enumerate((op.Exceptions).GetEnumerator())
+                                    from __loop29_tmp_item_ex in EnumerableExtensions.Enumerate((__loop29_tmp_item___noname29).GetEnumerator()).OfType<ExceptionType>()
                                     select
                                         new
                                         {
-                                            __loop23_item___noname23 = __loop23_tmp_item___noname23,
-                                            __loop23_item_ex = __loop23_tmp_item_ex,
+                                            __loop29_item___noname29 = __loop29_tmp_item___noname29,
+                                            __loop29_item_ex = __loop29_tmp_item_ex,
                                         }).ToArray();
-                                foreach (var __loop23_item in __loop23_result)
+                                foreach (var __loop29_item in __loop29_result)
                                 {
-                                    var __noname23 = __loop23_item.__loop23_item___noname23;
-                                    var ex = __loop23_item.__loop23_item_ex;
-                                    ++__loop23_iteration;
-                                    if (__loop23_iteration >= 2)
+                                    var __noname29 = __loop29_item.__loop29_item___noname29;
+                                    var ex = __loop29_item.__loop29_item_ex;
+                                    ++__loop29_iteration;
+                                    if (__loop29_iteration >= 2)
                                     {
                                         delim = ",";
                                     }
@@ -1105,21 +1745,21 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("    }");
                     __printer.WriteLine();
-                    int __loop24_iteration = 0;
-                    var __loop24_result =
-                        (from __loop24_tmp_item___noname24 in EnumerableExtensions.Enumerate((endp.Interface.Operations).GetEnumerator())
-                        from __loop24_tmp_item_op in EnumerableExtensions.Enumerate((__loop24_tmp_item___noname24).GetEnumerator()).OfType<Operation>()
+                    int __loop30_iteration = 0;
+                    var __loop30_result =
+                        (from __loop30_tmp_item___noname30 in EnumerableExtensions.Enumerate((endp.Interface.Operations).GetEnumerator())
+                        from __loop30_tmp_item_op in EnumerableExtensions.Enumerate((__loop30_tmp_item___noname30).GetEnumerator()).OfType<Operation>()
                         select
                             new
                             {
-                                __loop24_item___noname24 = __loop24_tmp_item___noname24,
-                                __loop24_item_op = __loop24_tmp_item_op,
+                                __loop30_item___noname30 = __loop30_tmp_item___noname30,
+                                __loop30_item_op = __loop30_tmp_item_op,
                             }).ToArray();
-                    foreach (var __loop24_item in __loop24_result)
+                    foreach (var __loop30_item in __loop30_result)
                     {
-                        var __noname24 = __loop24_item.__loop24_item___noname24;
-                        var op = __loop24_item.__loop24_item_op;
-                        ++__loop24_iteration;
+                        var __noname30 = __loop30_item.__loop30_item___noname30;
+                        var op = __loop30_item.__loop30_item_op;
+                        ++__loop30_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("^");
@@ -1362,21 +2002,21 @@ namespace SoaMetaModel
                     }
                     __printer.TrimLine();
                     __printer.WriteLine();
-                    int __loop25_iteration = 0;
-                    var __loop25_result =
-                        (from __loop25_tmp_item___noname25 in EnumerableExtensions.Enumerate((endp.Interface.Operations).GetEnumerator())
-                        from __loop25_tmp_item_op in EnumerableExtensions.Enumerate((__loop25_tmp_item___noname25).GetEnumerator()).OfType<Operation>()
+                    int __loop31_iteration = 0;
+                    var __loop31_result =
+                        (from __loop31_tmp_item___noname31 in EnumerableExtensions.Enumerate((endp.Interface.Operations).GetEnumerator())
+                        from __loop31_tmp_item_op in EnumerableExtensions.Enumerate((__loop31_tmp_item___noname31).GetEnumerator()).OfType<Operation>()
                         select
                             new
                             {
-                                __loop25_item___noname25 = __loop25_tmp_item___noname25,
-                                __loop25_item_op = __loop25_tmp_item_op,
+                                __loop31_item___noname31 = __loop31_tmp_item___noname31,
+                                __loop31_item_op = __loop31_tmp_item_op,
                             }).ToArray();
-                    foreach (var __loop25_item in __loop25_result)
+                    foreach (var __loop31_item in __loop31_result)
                     {
-                        var __noname25 = __loop25_item.__loop25_item___noname25;
-                        var op = __loop25_item.__loop25_item_op;
-                        ++__loop25_iteration;
+                        var __noname31 = __loop31_item.__loop31_item___noname31;
+                        var op = __loop31_item.__loop31_item_op;
+                        ++__loop31_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("^");
@@ -1492,21 +2132,21 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("    }");
                     __printer.WriteLine();
-                    int __loop26_iteration = 0;
-                    var __loop26_result =
-                        (from __loop26_tmp_item___noname26 in EnumerableExtensions.Enumerate((auth.OperationAuthorizations).GetEnumerator())
-                        from __loop26_tmp_item_op in EnumerableExtensions.Enumerate((__loop26_tmp_item___noname26).GetEnumerator()).OfType<OperationAuthorization>()
+                    int __loop32_iteration = 0;
+                    var __loop32_result =
+                        (from __loop32_tmp_item___noname32 in EnumerableExtensions.Enumerate((auth.OperationAuthorizations).GetEnumerator())
+                        from __loop32_tmp_item_op in EnumerableExtensions.Enumerate((__loop32_tmp_item___noname32).GetEnumerator()).OfType<OperationAuthorization>()
                         select
                             new
                             {
-                                __loop26_item___noname26 = __loop26_tmp_item___noname26,
-                                __loop26_item_op = __loop26_tmp_item_op,
+                                __loop32_item___noname32 = __loop32_tmp_item___noname32,
+                                __loop32_item_op = __loop32_tmp_item_op,
                             }).ToArray();
-                    foreach (var __loop26_item in __loop26_result)
+                    foreach (var __loop32_item in __loop32_result)
                     {
-                        var __noname26 = __loop26_item.__loop26_item___noname26;
-                        var op = __loop26_item.__loop26_item_op;
-                        ++__loop26_iteration;
+                        var __noname32 = __loop32_item.__loop32_item___noname32;
+                        var op = __loop32_item.__loop32_item_op;
+                        ++__loop32_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("^");
@@ -1569,21 +2209,21 @@ namespace SoaMetaModel
                         __printer.WriteTemplateOutput("            ");
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("    ");
-                        int __loop27_iteration = 0;
-                        var __loop27_result =
-                            (from __loop27_tmp_item___noname27 in EnumerableExtensions.Enumerate((op.References).GetEnumerator())
-                            from __loop27_tmp_item_re in EnumerableExtensions.Enumerate((__loop27_tmp_item___noname27).GetEnumerator()).OfType<Reference>()
+                        int __loop33_iteration = 0;
+                        var __loop33_result =
+                            (from __loop33_tmp_item___noname33 in EnumerableExtensions.Enumerate((op.References).GetEnumerator())
+                            from __loop33_tmp_item_re in EnumerableExtensions.Enumerate((__loop33_tmp_item___noname33).GetEnumerator()).OfType<Reference>()
                             select
                                 new
                                 {
-                                    __loop27_item___noname27 = __loop27_tmp_item___noname27,
-                                    __loop27_item_re = __loop27_tmp_item_re,
+                                    __loop33_item___noname33 = __loop33_tmp_item___noname33,
+                                    __loop33_item_re = __loop33_tmp_item_re,
                                 }).ToArray();
-                        foreach (var __loop27_item in __loop27_result)
+                        foreach (var __loop33_item in __loop33_result)
                         {
-                            var __noname27 = __loop27_item.__loop27_item___noname27;
-                            var re = __loop27_item.__loop27_item_re;
-                            ++__loop27_iteration;
+                            var __noname33 = __loop33_item.__loop33_item___noname33;
+                            var re = __loop33_item.__loop33_item_re;
+                            ++__loop33_iteration;
                             __printer.TrimLine();
                             __printer.WriteLine();
                             __printer.WriteTemplateOutput("        ");
@@ -1626,21 +2266,21 @@ namespace SoaMetaModel
                                 __printer.WriteTemplateOutput("();");
                                 __printer.WriteLine();
                                 __printer.WriteTemplateOutput("            ");
-                                int __loop28_iteration = 0;
-                                var __loop28_result =
-                                    (from __loop28_tmp_item___noname28 in EnumerableExtensions.Enumerate((((ClaimsetType)re.Object).Fields).GetEnumerator())
-                                    from __loop28_tmp_item_f in EnumerableExtensions.Enumerate((__loop28_tmp_item___noname28).GetEnumerator()).OfType<ClaimField>()
+                                int __loop34_iteration = 0;
+                                var __loop34_result =
+                                    (from __loop34_tmp_item___noname34 in EnumerableExtensions.Enumerate((((ClaimsetType)re.Object).Fields).GetEnumerator())
+                                    from __loop34_tmp_item_f in EnumerableExtensions.Enumerate((__loop34_tmp_item___noname34).GetEnumerator()).OfType<ClaimField>()
                                     select
                                         new
                                         {
-                                            __loop28_item___noname28 = __loop28_tmp_item___noname28,
-                                            __loop28_item_f = __loop28_tmp_item_f,
+                                            __loop34_item___noname34 = __loop34_tmp_item___noname34,
+                                            __loop34_item_f = __loop34_tmp_item_f,
                                         }).ToArray();
-                                foreach (var __loop28_item in __loop28_result)
+                                foreach (var __loop34_item in __loop34_result)
                                 {
-                                    var __noname28 = __loop28_item.__loop28_item___noname28;
-                                    var f = __loop28_item.__loop28_item_f;
-                                    ++__loop28_iteration;
+                                    var __noname34 = __loop34_item.__loop34_item___noname34;
+                                    var f = __loop34_item.__loop34_item_f;
+                                    ++__loop34_iteration;
                                     __printer.TrimLine();
                                     __printer.WriteLine();
                                     __printer.WriteTemplateOutput("            ");
@@ -1668,21 +2308,21 @@ namespace SoaMetaModel
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("    ");
-                        int __loop29_iteration = 0;
-                        var __loop29_result =
-                            (from __loop29_tmp_item___noname29 in EnumerableExtensions.Enumerate((op.OperationAuthorizationStatements).GetEnumerator())
-                            from __loop29_tmp_item_oas in EnumerableExtensions.Enumerate((__loop29_tmp_item___noname29).GetEnumerator()).OfType<OperationAuthorizationStatement>()
+                        int __loop35_iteration = 0;
+                        var __loop35_result =
+                            (from __loop35_tmp_item___noname35 in EnumerableExtensions.Enumerate((op.OperationAuthorizationStatements).GetEnumerator())
+                            from __loop35_tmp_item_oas in EnumerableExtensions.Enumerate((__loop35_tmp_item___noname35).GetEnumerator()).OfType<OperationAuthorizationStatement>()
                             select
                                 new
                                 {
-                                    __loop29_item___noname29 = __loop29_tmp_item___noname29,
-                                    __loop29_item_oas = __loop29_tmp_item_oas,
+                                    __loop35_item___noname35 = __loop35_tmp_item___noname35,
+                                    __loop35_item_oas = __loop35_tmp_item_oas,
                                 }).ToArray();
-                        foreach (var __loop29_item in __loop29_result)
+                        foreach (var __loop35_item in __loop35_result)
                         {
-                            var __noname29 = __loop29_item.__loop29_item___noname29;
-                            var oas = __loop29_item.__loop29_item_oas;
-                            ++__loop29_iteration;
+                            var __noname35 = __loop35_item.__loop35_item___noname35;
+                            var oas = __loop35_item.__loop35_item_oas;
+                            ++__loop35_iteration;
                             __printer.TrimLine();
                             __printer.WriteLine();
                             __printer.WriteTemplateOutput("            // Demand: ");
@@ -1752,21 +2392,21 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("    }");
                     __printer.WriteLine();
-                    int __loop30_iteration = 0;
-                    var __loop30_result =
-                        (from __loop30_tmp_item___noname30 in EnumerableExtensions.Enumerate((con.OperationContracts).GetEnumerator())
-                        from __loop30_tmp_item_op in EnumerableExtensions.Enumerate((__loop30_tmp_item___noname30).GetEnumerator()).OfType<OperationContract>()
+                    int __loop36_iteration = 0;
+                    var __loop36_result =
+                        (from __loop36_tmp_item___noname36 in EnumerableExtensions.Enumerate((con.OperationContracts).GetEnumerator())
+                        from __loop36_tmp_item_op in EnumerableExtensions.Enumerate((__loop36_tmp_item___noname36).GetEnumerator()).OfType<OperationContract>()
                         select
                             new
                             {
-                                __loop30_item___noname30 = __loop30_tmp_item___noname30,
-                                __loop30_item_op = __loop30_tmp_item_op,
+                                __loop36_item___noname36 = __loop36_tmp_item___noname36,
+                                __loop36_item_op = __loop36_tmp_item_op,
                             }).ToArray();
-                    foreach (var __loop30_item in __loop30_result)
+                    foreach (var __loop36_item in __loop36_result)
                     {
-                        var __noname30 = __loop30_item.__loop30_item___noname30;
-                        var op = __loop30_item.__loop30_item_op;
-                        ++__loop30_iteration;
+                        var __noname36 = __loop36_item.__loop36_item___noname36;
+                        var op = __loop36_item.__loop36_item_op;
+                        ++__loop36_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("^");
@@ -1776,21 +2416,21 @@ namespace SoaMetaModel
                         __printer.WriteTemplateOutput(" {");
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("    ");
-                        int __loop31_iteration = 0;
-                        var __loop31_result =
-                            (from __loop31_tmp_item___noname31 in EnumerableExtensions.Enumerate((op.OperationContractStatements).GetEnumerator())
-                            from __loop31_tmp_item_ocs in EnumerableExtensions.Enumerate((__loop31_tmp_item___noname31).GetEnumerator()).OfType<Requires>()
+                        int __loop37_iteration = 0;
+                        var __loop37_result =
+                            (from __loop37_tmp_item___noname37 in EnumerableExtensions.Enumerate((op.OperationContractStatements).GetEnumerator())
+                            from __loop37_tmp_item_ocs in EnumerableExtensions.Enumerate((__loop37_tmp_item___noname37).GetEnumerator()).OfType<Requires>()
                             select
                                 new
                                 {
-                                    __loop31_item___noname31 = __loop31_tmp_item___noname31,
-                                    __loop31_item_ocs = __loop31_tmp_item_ocs,
+                                    __loop37_item___noname37 = __loop37_tmp_item___noname37,
+                                    __loop37_item_ocs = __loop37_tmp_item_ocs,
                                 }).ToArray();
-                        foreach (var __loop31_item in __loop31_result)
+                        foreach (var __loop37_item in __loop37_result)
                         {
-                            var __noname31 = __loop31_item.__loop31_item___noname31;
-                            var ocs = __loop31_item.__loop31_item_ocs;
-                            ++__loop31_iteration;
+                            var __noname37 = __loop37_item.__loop37_item___noname37;
+                            var ocs = __loop37_item.__loop37_item_ocs;
+                            ++__loop37_iteration;
                             __printer.TrimLine();
                             __printer.WriteLine();
                             __printer.WriteTemplateOutput("^");
@@ -1859,21 +2499,21 @@ namespace SoaMetaModel
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("    ");
-                        int __loop32_iteration = 0;
-                        var __loop32_result =
-                            (from __loop32_tmp_item___noname32 in EnumerableExtensions.Enumerate((op.OperationContractStatements).GetEnumerator())
-                            from __loop32_tmp_item_ocs in EnumerableExtensions.Enumerate((__loop32_tmp_item___noname32).GetEnumerator()).OfType<Ensures>()
+                        int __loop38_iteration = 0;
+                        var __loop38_result =
+                            (from __loop38_tmp_item___noname38 in EnumerableExtensions.Enumerate((op.OperationContractStatements).GetEnumerator())
+                            from __loop38_tmp_item_ocs in EnumerableExtensions.Enumerate((__loop38_tmp_item___noname38).GetEnumerator()).OfType<Ensures>()
                             select
                                 new
                                 {
-                                    __loop32_item___noname32 = __loop32_tmp_item___noname32,
-                                    __loop32_item_ocs = __loop32_tmp_item_ocs,
+                                    __loop38_item___noname38 = __loop38_tmp_item___noname38,
+                                    __loop38_item_ocs = __loop38_tmp_item_ocs,
                                 }).ToArray();
-                        foreach (var __loop32_item in __loop32_result)
+                        foreach (var __loop38_item in __loop38_result)
                         {
-                            var __noname32 = __loop32_item.__loop32_item___noname32;
-                            var ocs = __loop32_item.__loop32_item_ocs;
-                            ++__loop32_iteration;
+                            var __noname38 = __loop38_item.__loop38_item___noname38;
+                            var ocs = __loop38_item.__loop38_item_ocs;
+                            ++__loop38_iteration;
                             __printer.TrimLine();
                             __printer.WriteLine();
                             __printer.WriteTemplateOutput("^");

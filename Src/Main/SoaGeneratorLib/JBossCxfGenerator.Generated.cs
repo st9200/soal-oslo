@@ -73,6 +73,7 @@ namespace SoaMetaModel
                 EclipseCxfGenerator.Properties.CxfVersion = Properties.CxfVersion;
                 EclipseCxfGenerator.Properties.GenerateJksService = Properties.GenerateJksService;
                 EclipseCxfGenerator.Properties.GenerateJksClient = Properties.GenerateJksClient;
+                EclipseCxfGenerator.Properties.GenerateRestfulWebService = Properties.GenerateRestfulWebService;
                 Context.SetOutputFolder(Properties.OutputDir);
                 Context.CreateFolder("JBoss");
                 if (!Properties.GenerateRestfulWebService)
@@ -103,15 +104,32 @@ namespace SoaMetaModel
                 Context.Output(EclipseCxfGenerator.Generated_Generate_web_services_jsp());
                 Context.CreateFolder("JBoss/" + Generated_GetProjectName() + "/WebContent/META-INF");
                 Context.SetOutput("JBoss/" + Generated_GetProjectName() + "/WebContent/META-INF/MANIFEST.MF");
-                Context.Output(EclipseCxfGenerator.Generated_Generate_MetaInf_Manifest());
+                if (Properties.GenerateRestfulWebService)
+                {
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_MetaInf_Manifest(true));
+                }
+                else
+                {
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_MetaInf_Manifest(false));
+                }
                 Context.CreateFolder("JBoss/" + Generated_GetProjectName() + "/WebContent/WEB-INF");
                 Context.CreateFolder("JBoss/" + Generated_GetProjectName() + "/WebContent/WEB-INF/lib");
                 Context.SetOutput("JBoss/" + Generated_GetProjectName() + "/WebContent/WEB-INF/web.xml");
-                Context.Output(Generated_Generate_web_xml());
-                Context.SetOutput("JBoss/" + Generated_GetProjectName() + "/WebContent/WEB-INF/jbossws-cxf.xml");
-                Context.Output(EclipseCxfGenerator.Generated_Generate_cxf_xml(true, Properties.GenerateJksService));
+                if (Properties.GenerateRestfulWebService)
+                {
+                    Context.Output(Generated_Generate_web_xml(true));
+                }
+                else
+                {
+                    Context.Output(Generated_Generate_web_xml(false));
+                }
+                if (!Properties.GenerateRestfulWebService)
+                {
+                    Context.SetOutput("JBoss/" + Generated_GetProjectName() + "/WebContent/WEB-INF/jbossws-cxf.xml");
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_cxf_xml(true, Properties.GenerateJksService));
+                }
                 Context.CreateFolder("JBoss/" + Generated_GetProjectName() + "/src");
-                if (Properties.GenerateJksService)
+                if (Properties.GenerateJksService && !Properties.GenerateRestfulWebService)
                 {
                     Context.SetOutput("JBoss/" + Generated_GetProjectName() + "/src/SecurityCallbackHandler.java");
                     Context.Output(EclipseCxfGenerator.Generated_Generate_SecurityCallbackHandler(""));
@@ -172,9 +190,25 @@ namespace SoaMetaModel
                 }
                 Context.CreateFolder("JBoss/" + Generated_GetClientProjectName());
                 Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/.project");
-                Context.Output(EclipseCxfGenerator.Generated_Generate_client_project());
+                if (Properties.GenerateRestfulWebService)
+                {
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_client_project(true));
+                }
+                else
+                {
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_client_project(false));
+                }
                 Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/.classpath");
-                Context.Output(EclipseCxfGenerator.Generated_Generate_client_classpath());
+                if (Properties.GenerateRestfulWebService)
+                {
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_client_classpath_rest());
+                    Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/pom.xml");
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_pom());
+                }
+                else
+                {
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_client_classpath());
+                }
                 Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/.settings");
                 Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/.settings/org.eclipse.jdt.core.prefs");
                 Context.Output(EclipseCxfGenerator.Generated_Generate_core_prefs());
@@ -182,12 +216,22 @@ namespace SoaMetaModel
                 Context.Output(EclipseCxfGenerator.Generated_Generate_ws_cxf_core_prefs());
                 Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/bin");
                 Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/src/META-INF");
-                Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/src/META-INF/cxf-client.xml");
-                Context.Output(EclipseCxfGenerator.Generated_Generate_cxf_xml(false, Properties.GenerateJksClient));
+                if (!Properties.GenerateRestfulWebService)
+                {
+                    Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/src/META-INF/cxf-client.xml");
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_cxf_xml(false, Properties.GenerateJksClient));
+                }
                 Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/src/META-INF");
                 Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/src/META-INF/MANIFEST.MF");
-                Context.Output(EclipseCxfGenerator.Generated_Generate_MetaInf_Manifest());
-                if (Properties.GenerateJksClient)
+                if (Properties.GenerateRestfulWebService)
+                {
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_MetaInf_Manifest(true));
+                }
+                else
+                {
+                    Context.Output(EclipseCxfGenerator.Generated_Generate_MetaInf_Manifest(false));
+                }
+                if (Properties.GenerateJksClient && !Properties.GenerateRestfulWebService)
                 {
                     Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/src/SecurityCallbackHandler.java");
                     Context.Output(EclipseCxfGenerator.Generated_Generate_SecurityCallbackHandler(""));
@@ -213,36 +257,39 @@ namespace SoaMetaModel
                 }
                 if (Properties.GenerateRestfulWebService)
                 {
-                    JavaRestGenerator.Generated_GenerateJavaCode("JBoss/" + Generated_GetClientProjectName() + "/src");
+                    JavaRestGenerator.Generated_GenerateJavaCode("JBoss/" + Generated_GetClientProjectName() + "/src/main/java");
                 }
                 else
                 {
                     JavaSoapGenerator.Generated_GenerateJavaCode("JBoss/" + Generated_GetClientProjectName() + "/src");
                 }
-                int __loop2_iteration = 0;
-                var __loop2_result =
-                    (from __loop2_tmp_item___noname2 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                    from __loop2_tmp_item_ns in EnumerableExtensions.Enumerate((__loop2_tmp_item___noname2).GetEnumerator()).OfType<Namespace>()
-                    select
-                        new
-                        {
-                            __loop2_item___noname2 = __loop2_tmp_item___noname2,
-                            __loop2_item_ns = __loop2_tmp_item_ns,
-                        }).ToArray();
-                foreach (var __loop2_item in __loop2_result)
+                if (Properties.GenerateRestfulWebService)
                 {
-                    var __noname2 = __loop2_item.__loop2_item___noname2;
-                    var ns = __loop2_item.__loop2_item_ns;
-                    ++__loop2_iteration;
-                    Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/src/" + Generated_GetPackage(ns).ToLower() + "client");
-                    Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/src/" + Generated_GetPackage(ns).ToLower() + "client/Program.java");
-                    Context.Output(EclipseCxfGenerator.Generated_Generate_Program_java(ns));
+                    int __loop2_iteration = 0;
+                    var __loop2_result =
+                        (from __loop2_tmp_item___noname2 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop2_tmp_item_ns in EnumerableExtensions.Enumerate((__loop2_tmp_item___noname2).GetEnumerator()).OfType<Namespace>()
+                        select
+                            new
+                            {
+                                __loop2_item___noname2 = __loop2_tmp_item___noname2,
+                                __loop2_item_ns = __loop2_tmp_item_ns,
+                            }).ToArray();
+                    foreach (var __loop2_item in __loop2_result)
+                    {
+                        var __noname2 = __loop2_item.__loop2_item___noname2;
+                        var ns = __loop2_item.__loop2_item_ns;
+                        ++__loop2_iteration;
+                        Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/src/main/resources/" + Generated_GetPackage(ns).ToLower() + "client");
+                        Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/src/test/java/" + Generated_GetPackage(ns).ToLower() + "client");
+                        Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/src/test/resources/" + Generated_GetPackage(ns).ToLower() + "client");
+                        Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/src/main/java/" + Generated_GetPackage(ns).ToLower() + "client");
+                        Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/src/main/java/" + Generated_GetPackage(ns).ToLower() + "client/Program.java");
+                        Context.Output(EclipseCxfGenerator.Generated_Generate_Program_java_rest(ns));
+                    }
                 }
-                Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/src/META-INF");
-                Context.SetOutputFolder(Properties.OutputDir + "/JBoss/" + Generated_GetClientProjectName() + "/src/META-INF");
-                if (!Properties.GenerateRestfulWebService)
+                else
                 {
-                    XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/JBoss/" + Generated_GetClientProjectName() + "/META-INF";
                     int __loop3_iteration = 0;
                     var __loop3_result =
                         (from __loop3_tmp_item___noname3 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
@@ -258,6 +305,31 @@ namespace SoaMetaModel
                         var __noname3 = __loop3_item.__loop3_item___noname3;
                         var ns = __loop3_item.__loop3_item_ns;
                         ++__loop3_iteration;
+                        Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/src/" + Generated_GetPackage(ns).ToLower() + "client");
+                        Context.SetOutput("JBoss/" + Generated_GetClientProjectName() + "/src/" + Generated_GetPackage(ns).ToLower() + "client/Program.java");
+                        Context.Output(EclipseCxfGenerator.Generated_Generate_Program_java(ns));
+                    }
+                }
+                Context.CreateFolder("JBoss/" + Generated_GetClientProjectName() + "/src/META-INF");
+                Context.SetOutputFolder(Properties.OutputDir + "/JBoss/" + Generated_GetClientProjectName() + "/src/META-INF");
+                if (!Properties.GenerateRestfulWebService)
+                {
+                    XsdWsdlGenerator.Properties.OutputDir = Properties.OutputDir + "/JBoss/" + Generated_GetClientProjectName() + "/META-INF";
+                    int __loop4_iteration = 0;
+                    var __loop4_result =
+                        (from __loop4_tmp_item___noname4 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop4_tmp_item_ns in EnumerableExtensions.Enumerate((__loop4_tmp_item___noname4).GetEnumerator()).OfType<Namespace>()
+                        select
+                            new
+                            {
+                                __loop4_item___noname4 = __loop4_tmp_item___noname4,
+                                __loop4_item_ns = __loop4_tmp_item_ns,
+                            }).ToArray();
+                    foreach (var __loop4_item in __loop4_result)
+                    {
+                        var __noname4 = __loop4_item.__loop4_item___noname4;
+                        var ns = __loop4_item.__loop4_item_ns;
+                        ++__loop4_iteration;
                         XsdWsdlGenerator.Generated_GenerateXsdWsdl(ns);
                     }
                 }
@@ -274,7 +346,7 @@ namespace SoaMetaModel
                 return Properties.ProjectName + "Client";
             }
             
-            public List<string> Generated_Generate_web_xml()
+            public List<string> Generated_Generate_web_xml(bool rest)
             {
                 List<string> __result = new List<string>();
                 using(TemplatePrinter __printer = new TemplatePrinter(__result))
@@ -288,6 +360,25 @@ namespace SoaMetaModel
                     __printer.WriteTemplateOutput(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput(" xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd\">");
+                    __printer.WriteLine();
+                    if (rest)
+                    {
+                        __printer.TrimLine();
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("	<display-name>");
+                        __printer.Write(Properties.ProjectName);
+                        __printer.WriteTemplateOutput("</display-name>");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("	<servlet-mapping>");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("		<servlet-name>javax.ws.rs.core.Application</servlet-name>");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("		<url-pattern>/*</url-pattern>");
+                        __printer.WriteLine();
+                        __printer.WriteTemplateOutput("	</servlet-mapping>");
+                        __printer.WriteLine();
+                    }
+                    __printer.TrimLine();
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("</web-app>");
                     __printer.WriteLine();

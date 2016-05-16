@@ -46,6 +46,7 @@ function void Main()
 	EclipseCxfGenerator.Properties.CxfVersion = Properties.CxfVersion;
 	EclipseCxfGenerator.Properties.GenerateJksService = Properties.GenerateJksService;
 	EclipseCxfGenerator.Properties.GenerateJksClient = Properties.GenerateJksClient;
+	EclipseCxfGenerator.Properties.GenerateRestfulWebService = Properties.GenerateRestfulWebService;
 
 	Context.SetOutputFolder(Properties.OutputDir);
 	Context.CreateFolder("Tomcat");
@@ -78,17 +79,27 @@ function void Main()
 	Context.Output(EclipseCxfGenerator.Generate_web_services_jsp());
 	Context.CreateFolder("Tomcat/" + GetProjectName() + "/WebContent/META-INF");
 	Context.SetOutput("Tomcat/" + GetProjectName() + "/WebContent/META-INF/MANIFEST.MF");
-	Context.Output(EclipseCxfGenerator.Generate_MetaInf_Manifest());
+	if (Properties.GenerateRestfulWebService)
+		Context.Output(EclipseCxfGenerator.Generate_MetaInf_Manifest(true));
+	else
+		Context.Output(EclipseCxfGenerator.Generate_MetaInf_Manifest(false));
+	end if
 
 	Context.CreateFolder("Tomcat/" + GetProjectName() + "/WebContent/WEB-INF");
 	Context.CreateFolder("Tomcat/" + GetProjectName() + "/WebContent/WEB-INF/lib");
 	Context.SetOutput("Tomcat/" + GetProjectName() + "/WebContent/WEB-INF/web.xml");
-	Context.Output(Generate_web_xml());
-	Context.SetOutput("Tomcat/" + GetProjectName() + "/WebContent/WEB-INF/cxf-beans.xml");
-	Context.Output(EclipseCxfGenerator.Generate_cxf_xml(true, Properties.GenerateJksService));
+	if (Properties.GenerateRestfulWebService)
+		Context.Output(Generate_web_xml(true));
+	else
+		Context.Output(Generate_web_xml(false));
+	end if
+	if (!Properties.GenerateRestfulWebService)
+		Context.SetOutput("Tomcat/" + GetProjectName() + "/WebContent/WEB-INF/cxf-beans.xml");
+		Context.Output(EclipseCxfGenerator.Generate_cxf_xml(true, Properties.GenerateJksService));
+	end if
 	
 	Context.CreateFolder("Tomcat/" + GetProjectName() + "/src");
-	if (Properties.GenerateJksService)
+	if (Properties.GenerateJksService && !Properties.GenerateRestfulWebService)
 		Context.SetOutput("Tomcat/" + GetProjectName() + "/src/SecurityCallbackHandler.java");
 		Context.Output(EclipseCxfGenerator.Generate_SecurityCallbackHandler(""));
 	end if
@@ -131,10 +142,20 @@ function void Main()
 		JavaSoapGenerator.Properties.WsdlDirectory = "META-INF";
 	end if
 	Context.CreateFolder("Tomcat/" + GetClientProjectName());
-	Context.SetOutput("Tomcat/" + GetClientProjectName() + "/.project");
-	Context.Output(EclipseCxfGenerator.Generate_client_project());
+	Context.SetOutput("Tomcat/" + GetClientProjectName() + "/.project");	
+	if (Properties.GenerateRestfulWebService)
+		Context.Output(EclipseCxfGenerator.Generate_client_project(true));
+	else
+		Context.Output(EclipseCxfGenerator.Generate_client_project(false));
+	end if
 	Context.SetOutput("Tomcat/" + GetClientProjectName() + "/.classpath");
-	Context.Output(EclipseCxfGenerator.Generate_client_classpath());
+	if (Properties.GenerateRestfulWebService)
+		Context.Output(EclipseCxfGenerator.Generate_client_classpath_rest());
+		Context.SetOutput("JBoss/" + GetClientProjectName() + "/pom.xml");
+		Context.Output(EclipseCxfGenerator.Generate_pom());
+	else
+		Context.Output(EclipseCxfGenerator.Generate_client_classpath());
+	end if
 	Context.CreateFolder("Tomcat/" + GetClientProjectName() + "/.settings");
 	Context.SetOutput("Tomcat/" + GetClientProjectName() + "/.settings/org.eclipse.jdt.core.prefs");
 	Context.Output(EclipseCxfGenerator.Generate_core_prefs());
@@ -148,7 +169,11 @@ function void Main()
 
 	Context.CreateFolder("Tomcat/" + GetClientProjectName() + "/src/META-INF");
 	Context.SetOutput("Tomcat/" + GetClientProjectName() + "/src/META-INF/MANIFEST.MF");
-	Context.Output(EclipseCxfGenerator.Generate_MetaInf_Manifest());
+	if (Properties.GenerateRestfulWebService)
+		Context.Output(EclipseCxfGenerator.Generate_MetaInf_Manifest(true));
+	else
+		Context.Output(EclipseCxfGenerator.Generate_MetaInf_Manifest(false));
+	end if
 
 	if (Properties.GenerateJksClient)
 		Context.SetOutput("Tomcat/" + GetClientProjectName() + "/src/SecurityCallbackHandler.java");
@@ -172,15 +197,23 @@ function void Main()
 	end if
 
 	if (Properties.GenerateRestfulWebService)
-		JavaRestGenerator.GenerateJavaCode("Tomcat/" + GetClientProjectName() + "/src");
+		JavaRestGenerator.GenerateJavaCode("Tomcat/" + GetClientProjectName() + "/src/main/java");
 	else
 		JavaSoapGenerator.GenerateJavaCode("Tomcat/" + GetClientProjectName() + "/src");
 	end if
-	loop(Instances->ns:typeof(Namespace))
-		Context.CreateFolder("Tomcat/" + GetClientProjectName() + "/src/"+GetPackage(ns).ToLower()+"client");
-		Context.SetOutput("Tomcat/" + GetClientProjectName() + "/src/"+GetPackage(ns).ToLower()+"client/Program.java");
-		Context.Output(EclipseCxfGenerator.Generate_Program_java(ns));
-	end loop
+	if (Properties.GenerateRestfulWebService)
+		loop(Instances->ns:typeof(Namespace))
+			Context.CreateFolder("Tomcat/" + GetClientProjectName() + "/src/main/java/"+GetPackage(ns).ToLower()+"client");
+			Context.SetOutput("Tomcat/" + GetClientProjectName() + "/src/main/java/"+GetPackage(ns).ToLower()+"client/Program.java");
+			Context.Output(EclipseCxfGenerator.Generate_Program_java_rest(ns));
+		end loop
+	else
+		loop(Instances->ns:typeof(Namespace))
+			Context.CreateFolder("Tomcat/" + GetClientProjectName() + "/src/"+GetPackage(ns).ToLower()+"client");
+			Context.SetOutput("Tomcat/" + GetClientProjectName() + "/src/"+GetPackage(ns).ToLower()+"client/Program.java");
+			Context.Output(EclipseCxfGenerator.Generate_Program_java(ns));
+		end loop
+	end if
 
 	Context.CreateFolder("Tomcat/" + GetClientProjectName() + "/src/META-INF");
 	if (!Properties.GenerateRestfulWebService)
@@ -233,12 +266,20 @@ template Generate_web_services_jsp()
 end template
 
 
-template Generate_web_xml()
+template Generate_web_xml(bool rest)
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app
  version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" 
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+[if (rest)]
+	<display-name>[Properties.ProjectName]</display-name>
+	<servlet-mapping>
+		<servlet-name>javax.ws.rs.core.Application</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+[end if]
 
 </web-app>
 end template

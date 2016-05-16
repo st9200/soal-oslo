@@ -84,15 +84,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>JavaSoapGenerator.mcg</DependentUpon>
     </Compile>
-    <Compile Include="JBossCxfGenerator.Generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>JBossCxfGenerator.mcg</DependentUpon>
-    </Compile>
     <Compile Include="JavaGeneratorEx.Generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>JavaGeneratorEx.mcg</DependentUpon>
+    </Compile>
+    <Compile Include="JBossCxfGenerator.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JBossCxfGenerator.mcg</DependentUpon>
     </Compile>
     <Compile Include="NetbeansGenerator.Generated.cs">
       <AutoGen>True</AutoGen>

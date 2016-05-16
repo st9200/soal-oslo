@@ -54,8 +54,8 @@ function void GenerateJavaCode(string rootDirectory)
 
             Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/package-info.java");
             Context.Output(JavaGenerator.GeneratePackageInfo(ns));
-            Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/ObjectFactory.java");
-            Context.Output(JavaGenerator.GenerateObjectFactory(ns));
+			Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/ObjectFactory.java");
+            Context.Output(GenerateObjectFactory(ns));
             // Interface for NewExpression
             loop(ns.Declarations->en:typeof(EnumType))
                 Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/" + en.Name + ".java");
@@ -69,13 +69,6 @@ function void GenerateJavaCode(string rootDirectory)
                 Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/" + cs.Name + ".java");
                 Context.Output(JavaGenerator.GenerateClaimset(cs));
             end loop
-            // Generate SoaMMException and fault
-            loop(ns.Declarations->ex:typeof(ExceptionType))
-                Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/" + ex.Name + "Fault.java");
-                Context.Output(JavaGenerator.GenerateException(ex));
-                Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/" + ex.Name + ".java");
-                Context.Output(JavaGenerator.GenerateOperationException(ex));
-            end loop
             loop(Instances->ar:typeof(ArrayType))
                 if(ar.ItemType is NullableType)
                 Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/ArrayOfNullable" + FirstLetterUp(ar.ItemType.Name) + ".java");
@@ -85,21 +78,16 @@ function void GenerateJavaCode(string rootDirectory)
                 Context.Output(JavaGenerator.GenerateArray(ar, ns));
                 end if
             end loop
-            loop(ns.Declarations->intf:typeof(Interface))
+			loop(ns.Declarations->intf:typeof(Interface))
                 loop(intf.Operations->op:typeof(Operation))
                     Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/" + FirstLetterUp(op.Name) + ".java");
                     Context.Output(JavaGenerator.GenerateOperationType(op));
                     if(op.ReturnType != PseudoType.Async)
                         Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/" + FirstLetterUp(op.Name) + "Response.java");
                         Context.Output(JavaGenerator.GenerateOperationResponseType(op));
-                    end if
-                    
-                    //loop(op.Exceptions->ex:typeof(ExceptionType))
-                    //    Context.SetOutput("Netbeans/" + GetProjectName() + "/src/java/" + JavaGenerator.NamespaceToPath(ns) + "/" + intf.Name + op.Name + ex.Name + ".java");
-                    //    Context.Output(JavaGenerator.GenerateOperationException(intf, op, ex));
-                    //end loop
-                    
-                end loop
+                    end if                    
+				end loop
+
                 Context.SetOutput(rootDirectory + JavaGenerator.NamespaceToPath(ns) + "/" + intf.Name + ".java");             
 				Context.Output(GenerateInterface(intf));		        
             end loop
@@ -115,14 +103,106 @@ end function
 
 
 /*
+* ObjectFactory.java
+*/
+template GenerateObjectFactory(Namespace ns)
+package [GetPackage(ns).ToLower()];
+^
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlElementDecl;
+import javax.xml.bind.annotation.XmlRegistry;
+import javax.xml.namespace.QName;
+^
+@XmlRegistry
+public class ObjectFactory {
+    public ObjectFactory() {
+    }
+[loop(ns.Declarations->type:typeof(StructType))]
+^
+    private final static QName _[FirstLetterUp(type.Name)]_QNAME = new QName("[GetUri(ns)]","[type.Name]");
+^
+    public [GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)] create[FirstLetterUp(type.Name)]() {
+        return new [GetPackage(ns).ToLower()].[type.Name]();
+    }
+^
+    @XmlElementDecl(namespace = "[GetUri(ns)]", name = "[type.Name]")
+    public JAXBElement<[GetPackage(ns).ToLower()].[type.Name]> create[FirstLetterUp(type.Name)]([GetPackage(ns).ToLower()].[type.Name] value) {
+        return new JAXBElement<[GetPackage(ns).ToLower()].[type.Name]>(_[FirstLetterUp(type.Name)]_QNAME, [GetPackage(ns).ToLower()].[type.Name].class, null, value);
+    }
+[end loop]
+[loop(ns.Declarations->type:typeof(EnumType))]
+^
+    private final static QName _[FirstLetterUp(type.Name)]_QNAME = new QName("[GetUri(ns)]","[type.Name]");
+^
+    @XmlElementDecl(namespace = "[GetUri(ns)]", name = "[type.Name]")
+    public JAXBElement<[GetPackage(ns).ToLower()].[type.Name]> create[FirstLetterUp(type.Name)]([GetPackage(ns).ToLower()].[type.Name] value) {
+        return new JAXBElement<[GetPackage(ns).ToLower()].[type.Name]>(_[FirstLetterUp(type.Name)]_QNAME, [GetPackage(ns).ToLower()].[type.Name].class, null, value);
+    }
+[end loop]
+[loop(Instances->type:typeof(ArrayType))]
+    [if(type.ItemType is NullableType)]
+^
+    private final static QName _ArrayOfNullable[FirstLetterUp(type.Name)]_QNAME = new QName("[GetUri(ns)]","ArrayOfNullable[FirstLetterUp(type.Name)]");
+^
+    public [GetPackage(ns).ToLower()].ArrayOfNullable[FirstLetterUp(type.ItemType.Name)] create_ArrayOfNullable[FirstLetterUp(type.ItemType.Name)]() {
+        return new [GetPackage(ns).ToLower()].ArrayOfNullable[FirstLetterUp(type.ItemType.Name)]();
+    }
+^
+    @XmlElementDecl(namespace = "[GetUri(ns)]", name = "_ArrayOfNullable[FirstLetterUp(type.ItemType.Name)]")
+    public JAXBElement<[GetPackage(ns).ToLower()].ArrayOfNullable[FirstLetterUp(type.ItemType.Name)]> create_ArrayOfNullable[FirstLetterUp(type.ItemType.Name)]([GetPackage(ns).ToLower()].ArrayOfNullable[FirstLetterUp(type.ItemType.Name)] value) {
+        return new JAXBElement<[GetPackage(ns).ToLower()].ArrayOfNullable[FirstLetterUp(type.ItemType.Name)]>(_ArrayOfNullable[FirstLetterUp(type.ItemType.Name)]_QNAME, [GetPackage(ns).ToLower()].ArrayOfNullable[FirstLetterUp(type.ItemType.Name)].class, null, value);
+    }
+    [else if(type.ItemType != BuiltInType.Byte)]
+^
+    private final static QName _ArrayOf[FirstLetterUp(type.ItemType.Name)]_QNAME = new QName("[GetUri(ns)]","ArrayOf[FirstLetterUp(type.ItemType.Name)]");
+^
+    public [GetPackage(ns).ToLower()].ArrayOf[FirstLetterUp(type.ItemType.Name)] createArrayOf[FirstLetterUp(type.ItemType.Name)]() {
+        return new [GetPackage(ns).ToLower()].ArrayOf[FirstLetterUp(type.ItemType.Name)]();
+    }
+^
+    @XmlElementDecl(namespace = "[GetUri(ns)]", name = "ArrayOf[FirstLetterUp(type.ItemType.Name)]")
+    public JAXBElement<[GetPackage(ns).ToLower()].ArrayOf[FirstLetterUp(type.ItemType.Name)]> createArrayOf[FirstLetterUp(type.ItemType.Name)]([GetPackage(ns).ToLower()].ArrayOf[FirstLetterUp(type.ItemType.Name)] value) {
+        return new JAXBElement<[GetPackage(ns).ToLower()].ArrayOf[FirstLetterUp(type.ItemType.Name)]>(_ArrayOf[FirstLetterUp(type.ItemType.Name)]_QNAME, [GetPackage(ns).ToLower()].ArrayOf[FirstLetterUp(type.ItemType.Name)].class, null, value);
+    }
+    [end if]
+[end loop]
+[loop(ns.Declarations->intf:typeof(Interface))]
+[loop(intf.Operations->type:typeof(Operation))]
+^
+    private final static QName _[FirstLetterUp(type.Name)]_QNAME = new QName("[GetUri(ns)]","[type.Name]");
+^
+    public [GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)] create[FirstLetterUp(type.Name)]() {
+        return new [GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)]();
+    }
+^
+    @XmlElementDecl(namespace = "[GetUri(ns)]", name = "[type.Name]")
+    public JAXBElement<[GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)]> create[FirstLetterUp(type.Name)]([GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)] value) {
+        return new JAXBElement<[GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)]>(_[FirstLetterUp(type.Name)]_QNAME, [GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)].class, null, value);
+    }
+    [if(type.ReturnType != PseudoType.Async)]
+^
+    private final static QName _[FirstLetterUp(type.Name)]Response_QNAME = new QName("[GetUri(ns)]","[type.Name]Response");
+^
+    public [GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)]Response create[FirstLetterUp(type.Name)]Response() {
+        return new [GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)]Response();
+    }
+^
+    @XmlElementDecl(namespace = "[GetUri(ns)]", name = "[type.Name]Response")
+    public JAXBElement<[GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)]Response> create[FirstLetterUp(type.Name)]Response([GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)]Response value) {
+        return new JAXBElement<[GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)]Response>(_[FirstLetterUp(type.Name)]Response_QNAME, [GetPackage(ns).ToLower()].[FirstLetterUp(type.Name)]Response.class, null, value);
+    }
+    [end if]
+[end loop]
+[end loop]
+}
+end template
+
+/*
 * Generate operation head
 */
 template GenerateOperationHead(Operation op)
-public [JavaGenerator.PrintType(op.ReturnType)] [FirstLetterLow(op.Name)](\
-[loop(op.Parameters->pa:typeof(OperationParameter); string comma = ""; comma = ", ")]
-[comma][JavaGenerator.PrintType(pa.Type)] [pa.Name]\
-[end loop]
-)[loop(op.Exceptions->ex:typeof(ExceptionType); string del = JavaGenerator.ThrowsSoaMMException(); del = ", ")][del][ex.Name][end loop]
+public [op.Name]Response [FirstLetterLow(op.Name)](\
+[op.Name] _[op.Name])
 end template
 
 
@@ -133,6 +213,7 @@ template GenerateInterface(Interface intf)
 package [GetPackage(intf.Namespace).ToLower()];
 ^
 import javax.ws.rs.Path;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -155,7 +236,8 @@ extends \
 ^
     @POST
 	@Path("[op.Name]")    
-	@Produces({"application/json", "application/xml"})
+	@Produces({"application/xml", "text/plain", "application/json"})
+	@Consumes({"application/xml", "text/plain", "application/json"})
 	[GenerateOperationHead(op)];
 [end loop]
 }
@@ -179,32 +261,5 @@ public class [endp.Name] implements [endp.Interface.Name] {
         [end if]      
     }
 [end loop]
-}
-end template
-
-
-template GenerateSoaMMException(Namespace ns)
-package [GetPackage(ns).ToLower()];
-^
-import javax.xml.ws.WebFault;
-^
-@WebFault(name = "SoaMMException", targetNamespace = "[GetUri(ns)]")
-public class SoaMMException extends Exception {
-^
-    private [GetPackage(ns).ToLower()].SoaMMFault faultInfo;
-^
-    public SoaMMException(String message, [GetPackage(ns).ToLower()].SoaMMFault faultInfo) {
-        super(message);
-        this.faultInfo = faultInfo;
-    }
-^
-    public SoaMMException(String message, [GetPackage(ns).ToLower()].SoaMMFault faultInfo, Throwable cause) {
-        super(message, cause);
-        this.faultInfo = faultInfo;
-    }
-^
-    public [GetPackage(ns).ToLower()].SoaMMFault getFaultInfo() {
-        return faultInfo;
-    }
 }
 end template

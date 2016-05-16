@@ -15,6 +15,7 @@ configuration
 		string CxfVersion = "2.7.11";
 		bool GenerateJksService = true;
 		bool GenerateJksClient = true;
+		bool GenerateRestfulWebService = false;
     end properties
 end configuration
 
@@ -100,7 +101,7 @@ template Generate_server_classpath()
 </classpath>
 end template
 
-template Generate_client_project()
+template Generate_client_project(bool rest)
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>[GetClientProjectName()]</name>
@@ -113,9 +114,19 @@ template Generate_client_project()
 			<arguments>
 			</arguments>
 		</buildCommand>
+	[if (rest)]
+		<buildCommand>
+            <name>org.eclipse.m2e.core.maven2Builder</name>
+            <arguments>
+            </arguments>
+        </buildCommand>
+	[end if]
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		[if (rest)]
+		<nature>org.eclipse.m2e.core.maven2Nature</nature>
+		[end if]
 	</natures>
 </projectDescription>
 end template
@@ -129,6 +140,57 @@ template Generate_client_classpath()
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Spring"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
+end template
+
+template Generate_client_classpath_rest()
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
+end template
+
+template Generate_pom()
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>[Properties.ProjectName]Client</groupId>
+  <artifactId>[Properties.ProjectName]Client</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-client</artifactId>
+        <version>3.0.10.Final</version>
+    </dependency>
+  </dependencies>
+</project>
 end template
 
 template Generate_jsdtscope()
@@ -199,11 +261,13 @@ template Generate_superType_name()
 Window
 end template
 
-template Generate_MetaInf_Manifest()
+template Generate_MetaInf_Manifest(bool rest)
 Manifest-Version: 1.0
 Class-Path: 
+[if (!rest)]
 Dependencies: org.springframework.spring,org.apache.cxf,org.apache.ws.security
-
+[end if]
+^
 end template
 
 template Generate_SecurityCallbackHandler(string packageName)
@@ -347,9 +411,15 @@ template Generate_web_services_jsp()
     </head>
     <body>
         <h1>List of Services</h1>
-[loop(Instances->endpoint:typeof(Endpoint))]
+[if (Properties.GenerateRestfulWebService)]
+	[loop(Instances->intf:typeof(Interface))]
+        <a href="[intf.Name]">[intf.Name]</a><br/>
+	[end loop]
+[else]
+	[loop(Instances->endpoint:typeof(Endpoint))]
         <a href="[endpoint.Name]?wsdl">[endpoint.Name]</a><br/>
-[end loop]
+	[end loop]
+[end if]
     </body>
 </html>
 end template
@@ -451,3 +521,41 @@ public class Program {
 ^
 }
 end template
+
+template Generate_Program_java_rest(Namespace ns)
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package [GetPackage(ns).ToLower()]client;
+^
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+^
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+^
+[loop(ns->Declarations->intf:typeof(Interface))]
+import [GetPackage(ns).ToLower()].[intf.Name];
+[end loop]
+^
+public class Program {
+
+	public static void main(String["[]"] args) {
+		try {
+			Client client = ClientBuilder.newClient();
+			WebTarget target = client.target("http://localhost:8080/[Properties.ProjectName]");
+			ResteasyWebTarget rtarget = (ResteasyWebTarget)target;
+		[loop(ns->Declarations->intf:typeof(Interface))]
+			[intf.Name] _[intf.Name] = rtarget.proxy([intf.Name].class);
+		[end loop]
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+^
+}
+end template
+
