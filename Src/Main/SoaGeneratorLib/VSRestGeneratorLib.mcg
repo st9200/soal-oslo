@@ -43,14 +43,31 @@ end template
 */
 template GenerateBehaviors()
 <behaviors>
-  TODO
+  [loop(Instances->endpoint:typeof(Endpoint))]
+  <serviceBehaviors>
+	  <behavior name="[endpoint.Name]Behavior">  
+		<serviceMetadata httpGetEnabled="true"/>
+		<serviceDebug includeExceptionDetailInFaults="false"/>
+	  </behavior>
+  </serviceBehaviors>
+  <endpointBehaviors>
+        <behavior name="web">
+          <webHttp/>
+        </behavior>
+  </endpointBehaviors>
+  [end loop]
 </behaviors>
 end template
 
 template GenerateClientBehaviors()
 <behaviors>
   <endpointBehaviors>
-	TODO
+	[loop(Instances->endpoint:typeof(Endpoint))]
+	  <behavior name="[endpoint.Name]Behavior">  
+		<serviceMetadata httpGetEnabled="true"/>
+		<serviceDebug includeExceptionDetailInFaults="false"/>
+	  </behavior>
+	[end loop]
   </endpointBehaviors>
 </behaviors>
 end template
@@ -60,13 +77,21 @@ end template
 */
 template GenerateServices()
 <services>
-	TODO
+	[loop(Instances->endpoint:typeof(Endpoint))]
+	<service name="[endpoint.Interface.Namespace.FullName].[endpoint.Name]" behaviorConfiguration="[endpoint.Name]Behavior">
+		<endpoint address="" binding="webHttpBinding" contract="[endpoint.Interface.Namespace.FullName].[endpoint.Interface.Name]"
+				  behaviorConfiguration="web"></endpoint>
+	</service>
+	[end loop]
 </services>
 end template
 
 template GenerateClientEndpoints()
 <client>
-	TODO
+	[loop(Instances->endpoint:typeof(Endpoint))]
+	  <endpoint name="[endpoint.Interface.Namespace.FullName].[endpoint.Name]" contract="[endpoint.Interface.Namespace.FullName].[endpoint.Interface.Name]" binding="customBinding" bindingConfiguration="[endpoint.Binding.Name]" behaviorConfiguration="[endpoint.Name]Behavior" address="[endpoint.Address.Uri]">
+	  </endpoint>
+	[end loop]
 </client>
 end template
 

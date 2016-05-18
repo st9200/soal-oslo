@@ -131,9 +131,9 @@
       <DependentUpon>VSRestGenerator.mcg</DependentUpon>
     </Compile>
     <Compile Include="VSRestGeneratorLib.Generated.cs">
-      <DependentUpon>VSRestGeneratorLib.mcg</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>VSRestGeneratorLib.mcg</DependentUpon>
     </Compile>
     <Compile Include="VSSoapGenerator.Generated.cs">
       <AutoGen>True</AutoGen>

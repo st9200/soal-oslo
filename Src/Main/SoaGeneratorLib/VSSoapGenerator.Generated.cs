@@ -47,6 +47,9 @@ namespace SoaMetaModel
             
             public override void Generated_Main()
             {
+                VSGenerator.Properties.ProjectName = Properties.ProjectName;
+                VSGenerator.Properties.ResourcesDir = Properties.ResourcesDir;
+                VSGenerator.Properties.OutputDir = Properties.OutputDir;
                 Context.SetOutputFolder(Properties.OutputDir);
                 Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName);
                 File.Copy(Properties.ResourcesDir + "/VisualStudio/About.aspx", "VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/About.aspx", true);

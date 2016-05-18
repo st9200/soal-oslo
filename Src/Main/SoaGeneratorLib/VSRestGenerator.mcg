@@ -26,6 +26,10 @@ end configuration
 */
 function void Main()
 
+	VSGenerator.Properties.ProjectName = Properties.ProjectName;
+	VSGenerator.Properties.ResourcesDir = Properties.ResourcesDir;
+	VSGenerator.Properties.OutputDir = Properties.OutputDir;
+
     // project folder and files generation
     Context.SetOutputFolder(Properties.OutputDir);
     Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName);
@@ -84,6 +88,10 @@ function void Main()
 
     // app data folder
     Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/App_Data");
+
+	// create server project file
+	Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/" + Properties.ProjectName + ".csproj");
+	Context.Output(VSGenerator.GenerateServerProject());
 
     // javascript files
     Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Scripts");
@@ -176,6 +184,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
+using System.ServiceModel.Web;
 using System.Text;
 ^
 namespace [intf.Namespace.FullName]
@@ -194,10 +203,7 @@ template GenerateInterfacePart(Interface intf)
 [loop(intf.Operations->op:typeof(Operation))]
 ^
         ["["]System.ServiceModel.OperationContractAttribute["]"]
-    [loop(op.Exceptions->ex:typeof(ExceptionType))]
-        ["["]System.ServiceModel.FaultContractAttribute(typeof([VSGenerator.PrintType(ex)])["]"]
-    [end loop]
-        ["["]System.ServiceModel.Web.WebInvokeAttribute(UriTemplate="[op.Name]", BodyStyle="WebMessageBodyStyle.Bare")["]"]
+        ["["]System.ServiceModel.Web.WebInvokeAttribute(Method="POST", UriTemplate="[op.Name]", BodyStyle=WebMessageBodyStyle.Wrapped, ResponseFormat=WebMessageFormat.Xml, RequestFormat=WebMessageFormat.Xml)["]"]
 		[VSGenerator.GenerateOperationHead(op)];
 ^
 [end loop]

@@ -43,6 +43,9 @@ namespace SoaMetaModel
             
             public override void Generated_Main()
             {
+                VSGenerator.Properties.ProjectName = Properties.ProjectName;
+                VSGenerator.Properties.ResourcesDir = Properties.ResourcesDir;
+                VSGenerator.Properties.OutputDir = Properties.OutputDir;
                 Context.SetOutputFolder(Properties.OutputDir);
                 Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName);
                 File.Copy(Properties.ResourcesDir + "/VisualStudio/About.aspx", "VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/About.aspx", true);
@@ -146,6 +149,8 @@ namespace SoaMetaModel
                     Context.Output(VSGenerator.Generated_GenerateClient(endp));
                 }
                 Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/App_Data");
+                Context.SetOutput("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/" + Properties.ProjectName + ".csproj");
+                Context.Output(VSGenerator.Generated_GenerateServerProject());
                 Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Scripts");
                 File.Copy(Properties.ResourcesDir + "/VisualStudio/jquery-1.4.1.js", "VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Scripts/jquery-1.4.1.js", true);
                 File.Copy(Properties.ResourcesDir + "/VisualStudio/jquery-1.4.1.min.js", "VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName + "/Scripts/jquery-1.4.1.min.js", true);
@@ -306,6 +311,8 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("using System.ServiceModel;");
                     __printer.WriteLine();
+                    __printer.WriteTemplateOutput("using System.ServiceModel.Web;");
+                    __printer.WriteLine();
                     __printer.WriteTemplateOutput("using System.Text;");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("^");
@@ -362,40 +369,11 @@ namespace SoaMetaModel
                         __printer.WriteTemplateOutput("System.ServiceModel.OperationContractAttribute");
                         __printer.Write("]");
                         __printer.WriteLine();
-                        __printer.WriteTemplateOutput("    ");
-                        int __loop9_iteration = 0;
-                        var __loop9_result =
-                            (from __loop9_tmp_item___noname9 in EnumerableExtensions.Enumerate((op.Exceptions).GetEnumerator())
-                            from __loop9_tmp_item_ex in EnumerableExtensions.Enumerate((__loop9_tmp_item___noname9).GetEnumerator()).OfType<ExceptionType>()
-                            select
-                                new
-                                {
-                                    __loop9_item___noname9 = __loop9_tmp_item___noname9,
-                                    __loop9_item_ex = __loop9_tmp_item_ex,
-                                }).ToArray();
-                        foreach (var __loop9_item in __loop9_result)
-                        {
-                            var __noname9 = __loop9_item.__loop9_item___noname9;
-                            var ex = __loop9_item.__loop9_item_ex;
-                            ++__loop9_iteration;
-                            __printer.TrimLine();
-                            __printer.WriteLine();
-                            __printer.WriteTemplateOutput("        ");
-                            __printer.Write("[");
-                            __printer.WriteTemplateOutput("System.ServiceModel.FaultContractAttribute(typeof(");
-                            __printer.Write(VSGenerator.Generated_PrintType(ex));
-                            __printer.WriteTemplateOutput(")");
-                            __printer.Write("]");
-                            __printer.WriteLine();
-                            __printer.WriteTemplateOutput("    ");
-                        }
-                        __printer.TrimLine();
-                        __printer.WriteLine();
                         __printer.WriteTemplateOutput("        ");
                         __printer.Write("[");
-                        __printer.WriteTemplateOutput("System.ServiceModel.Web.WebInvokeAttribute(UriTemplate=\"");
+                        __printer.WriteTemplateOutput("System.ServiceModel.Web.WebInvokeAttribute(Method=\"POST\", UriTemplate=\"");
                         __printer.Write(op.Name);
-                        __printer.WriteTemplateOutput("\", BodyStyle=\"WebMessageBodyStyle.Bare\")");
+                        __printer.WriteTemplateOutput("\", BodyStyle=WebMessageBodyStyle.Wrapped, ResponseFormat=WebMessageFormat.Xml, RequestFormat=WebMessageFormat.Xml)");
                         __printer.Write("]");
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("		");
@@ -442,21 +420,21 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("    {");
                     __printer.WriteLine();
-                    int __loop10_iteration = 0;
-                    var __loop10_result =
-                        (from __loop10_tmp_item___noname10 in EnumerableExtensions.Enumerate((endp.Interface.Operations).GetEnumerator())
-                        from __loop10_tmp_item_op in EnumerableExtensions.Enumerate((__loop10_tmp_item___noname10).GetEnumerator()).OfType<Operation>()
+                    int __loop9_iteration = 0;
+                    var __loop9_result =
+                        (from __loop9_tmp_item___noname9 in EnumerableExtensions.Enumerate((endp.Interface.Operations).GetEnumerator())
+                        from __loop9_tmp_item_op in EnumerableExtensions.Enumerate((__loop9_tmp_item___noname9).GetEnumerator()).OfType<Operation>()
                         select
                             new
                             {
-                                __loop10_item___noname10 = __loop10_tmp_item___noname10,
-                                __loop10_item_op = __loop10_tmp_item_op,
+                                __loop9_item___noname9 = __loop9_tmp_item___noname9,
+                                __loop9_item_op = __loop9_tmp_item_op,
                             }).ToArray();
-                    foreach (var __loop10_item in __loop10_result)
+                    foreach (var __loop9_item in __loop9_result)
                     {
-                        var __noname10 = __loop10_item.__loop10_item___noname10;
-                        var op = __loop10_item.__loop10_item_op;
-                        ++__loop10_iteration;
+                        var __noname9 = __loop9_item.__loop9_item___noname9;
+                        var op = __loop9_item.__loop9_item_op;
+                        ++__loop9_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         __printer.WriteTemplateOutput("^");
@@ -508,21 +486,21 @@ namespace SoaMetaModel
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("using System.ServiceModel;");
                     __printer.WriteLine();
-                    int __loop11_iteration = 0;
-                    var __loop11_result =
-                        (from __loop11_tmp_item___noname11 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                        from __loop11_tmp_item_ns in EnumerableExtensions.Enumerate((__loop11_tmp_item___noname11).GetEnumerator()).OfType<Namespace>()
+                    int __loop10_iteration = 0;
+                    var __loop10_result =
+                        (from __loop10_tmp_item___noname10 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop10_tmp_item_ns in EnumerableExtensions.Enumerate((__loop10_tmp_item___noname10).GetEnumerator()).OfType<Namespace>()
                         select
                             new
                             {
-                                __loop11_item___noname11 = __loop11_tmp_item___noname11,
-                                __loop11_item_ns = __loop11_tmp_item_ns,
+                                __loop10_item___noname10 = __loop10_tmp_item___noname10,
+                                __loop10_item_ns = __loop10_tmp_item_ns,
                             }).ToArray();
-                    foreach (var __loop11_item in __loop11_result)
+                    foreach (var __loop10_item in __loop10_result)
                     {
-                        var __noname11 = __loop11_item.__loop11_item___noname11;
-                        var ns = __loop11_item.__loop11_item_ns;
-                        ++__loop11_iteration;
+                        var __noname10 = __loop10_item.__loop10_item___noname10;
+                        var ns = __loop10_item.__loop10_item_ns;
+                        ++__loop10_iteration;
                         __printer.TrimLine();
                         __printer.WriteLine();
                         if (ns.HasDeclarations())
@@ -608,21 +586,21 @@ namespace SoaMetaModel
                     __printer.WriteTemplateOutput("                {");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("					");
-                    int __loop12_iteration = 0;
-                    var __loop12_result =
-                        (from __loop12_tmp_item___noname12 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                        from __loop12_tmp_item_endp in EnumerableExtensions.Enumerate((__loop12_tmp_item___noname12).GetEnumerator()).OfType<Endpoint>()
+                    int __loop11_iteration = 0;
+                    var __loop11_result =
+                        (from __loop11_tmp_item___noname11 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop11_tmp_item_endp in EnumerableExtensions.Enumerate((__loop11_tmp_item___noname11).GetEnumerator()).OfType<Endpoint>()
                         select
                             new
                             {
-                                __loop12_item___noname12 = __loop12_tmp_item___noname12,
-                                __loop12_item_endp = __loop12_tmp_item_endp,
+                                __loop11_item___noname11 = __loop11_tmp_item___noname11,
+                                __loop11_item_endp = __loop11_tmp_item_endp,
                             }).ToArray();
-                    foreach (var __loop12_item in __loop12_result)
+                    foreach (var __loop11_item in __loop11_result)
                     {
-                        var __noname12 = __loop12_item.__loop12_item___noname12;
-                        var endp = __loop12_item.__loop12_item_endp;
-                        ++__loop12_iteration;
+                        var __noname11 = __loop11_item.__loop11_item___noname11;
+                        var endp = __loop11_item.__loop11_item_endp;
+                        ++__loop11_iteration;
                         __printer.WriteTemplateOutput("                ");
                         __printer.TrimLine();
                         __printer.WriteLine();
@@ -653,21 +631,21 @@ namespace SoaMetaModel
                     __printer.WriteTemplateOutput("^");
                     __printer.WriteLine();
                     __printer.WriteTemplateOutput("		");
-                    int __loop13_iteration = 0;
-                    var __loop13_result =
-                        (from __loop13_tmp_item___noname13 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
-                        from __loop13_tmp_item_intf in EnumerableExtensions.Enumerate((__loop13_tmp_item___noname13).GetEnumerator()).OfType<Interface>()
+                    int __loop12_iteration = 0;
+                    var __loop12_result =
+                        (from __loop12_tmp_item___noname12 in EnumerableExtensions.Enumerate((Instances).GetEnumerator())
+                        from __loop12_tmp_item_intf in EnumerableExtensions.Enumerate((__loop12_tmp_item___noname12).GetEnumerator()).OfType<Interface>()
                         select
                             new
                             {
-                                __loop13_item___noname13 = __loop13_tmp_item___noname13,
-                                __loop13_item_intf = __loop13_tmp_item_intf,
+                                __loop12_item___noname12 = __loop12_tmp_item___noname12,
+                                __loop12_item_intf = __loop12_tmp_item_intf,
                             }).ToArray();
-                    foreach (var __loop13_item in __loop13_result)
+                    foreach (var __loop12_item in __loop12_result)
                     {
-                        var __noname13 = __loop13_item.__loop13_item___noname13;
-                        var intf = __loop13_item.__loop13_item_intf;
-                        ++__loop13_iteration;
+                        var __noname12 = __loop12_item.__loop12_item___noname12;
+                        var intf = __loop12_item.__loop12_item_intf;
+                        ++__loop12_iteration;
                         __printer.WriteTemplateOutput("                ");
                         __printer.TrimLine();
                         __printer.WriteLine();

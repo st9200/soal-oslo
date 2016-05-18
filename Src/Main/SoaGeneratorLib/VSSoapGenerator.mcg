@@ -28,6 +28,10 @@ end configuration
 */
 function void Main()
 
+	VSGenerator.Properties.ProjectName = Properties.ProjectName;
+	VSGenerator.Properties.ResourcesDir = Properties.ResourcesDir;
+	VSGenerator.Properties.OutputDir = Properties.OutputDir;
+
     // project folder and files generation
     Context.SetOutputFolder(Properties.OutputDir);
     Context.CreateFolder("VisualStudio/" + Properties.ProjectName + "/" + Properties.ProjectName);
